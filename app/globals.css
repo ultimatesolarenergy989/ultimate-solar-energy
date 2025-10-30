@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+:root{
+  --brand:#0a2a5a; /* deep navy */
+  --accent:#ffdf00; /* yellow CTA */
 }
+
 
 @theme inline {
   --color-background: var(--background);
@@ -23,4 +24,136 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+.bg-brand{ background-color: var(--brand); }
+.text-brand{ color: var(--brand); }
+.bg-accent{ background-color: var(--accent); }
+.text-accent{ color: var(--accent); }
+
+/* Hide Next.js development indicator */
+#__next-build-watcher,
+[id^="__next"],
+[data-nextjs-toast-errors-parent],
+nextjs-portal {
+  display: none !important;
+}
+
+/* Additional hiding for dev tools */
+#devtools-indicator {
+  display: none !important;
+}
+
+/* Standard Button Gradient Hover Effect */
+.btn-gradient-hover {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+}
+
+.btn-gradient-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 25%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.4) 75%,
+    transparent 100%
+  );
+  transition: left 0.6s ease-in-out;
+  z-index: 1;
+  transform: skewX(-20deg);
+}
+
+.btn-gradient-hover:hover::before {
+  left: 100%;
+}
+
+.btn-gradient-hover:hover {
+  background: linear-gradient(135deg, #FFC700 0%, #FFB700 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Subscribe Button Special Gradient */
+.btn-subscribe-gradient {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.btn-subscribe-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%
+  );
+  transition: left 0.5s ease-in-out;
+  z-index: 1;
+}
+
+.btn-subscribe-gradient:hover::before {
+  left: 100%;
+}
+
+.btn-subscribe-gradient:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+  animation: gradientShift 1.5s ease infinite;
+}
+
+/* Social Icon Gradient Hover */
+.social-icon-hover {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.social-icon-hover::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, 
+    rgba(255, 215, 0, 0) 0%, 
+    rgba(255, 215, 0, 0.4) 50%, 
+    rgba(255, 215, 0, 0) 100%
+  );
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.social-icon-hover:hover::after {
+  opacity: 1;
+}
+
+.social-icon-hover:hover {
+  transform: scale(1.15) translateY(-2px);
+  filter: brightness(1.2);
 }
