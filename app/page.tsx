@@ -16,8 +16,8 @@ export default function Home() {
       <Calculator />
       <YUltimate />
       <CompanySlider />
-      <TimeForSolar />
       <Blogs />
+      <TimeForSolar />
     </main>
   );
 }
