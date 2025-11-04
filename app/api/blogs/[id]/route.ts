@@ -4,11 +4,12 @@ import prisma from "@/lib/prisma";
 // GET single blog
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const blog = await prisma.blog.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         author: {
           select: {
@@ -34,9 +35,10 @@ export async function GET(
 // PUT update blog
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const {
       title,
@@ -52,7 +54,7 @@ export async function PUT(
 
     // Check if blog exists
     const existingBlog = await prisma.blog.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingBlog) {
@@ -75,7 +77,7 @@ export async function PUT(
 
     // Update blog
     const blog = await prisma.blog.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: title || existingBlog.title,
         slug: slug || existingBlog.slug,
@@ -108,11 +110,12 @@ export async function PUT(
 // DELETE blog
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.blog.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Blog deleted successfully" });
