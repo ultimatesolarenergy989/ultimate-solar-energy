@@ -103,7 +103,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/commercial"
+                  href="/commercial-solars"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> Commercial
@@ -111,7 +111,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/quote"
+                  href="/get-a-quote"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> Get a Quote
@@ -119,7 +119,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/contact-us"
+                  href="/contacts"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> Contact Us
@@ -135,7 +135,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/solar-homes"
+                  href="/why-ultimate-solar-energy/customer-support/update-for-stage-4-business-restrictions-for-rooftop-solar-and-storage"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> Solar Homes Program Update
@@ -150,7 +150,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/terms"
+                  href="/terms-and-conditions"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> Terms and Conditions
@@ -158,7 +158,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/support"
+                  href="/complaint-handling-at-use"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> Customer Support/Complaints
@@ -166,7 +166,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/warranty"
+                  href="/system-warranty"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> System Warranty
@@ -174,7 +174,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/cec-approved"
+                  href="/ultimate-solar-energy-a-cec-approved-solar-retailer"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> CEC Approved Solar Retailer
@@ -182,7 +182,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/support-now"
+                  href="/why-ultimate-solar-energy/customer-support"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> Get Support Now

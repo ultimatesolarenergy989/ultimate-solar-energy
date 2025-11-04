@@ -8,14 +8,14 @@ const productCategories = [
   {
     label: "RESIDENTIAL",
     href: "/products/residential",
-    submenu: [
-      { href: "/products/residential/6.6kw-platinum", label: "6.6 KW PLATINUM SYSTEM" },
-      { href: "/products/residential/6.6kw-boost", label: "6.6 KW BOOST SYSTEM" },
-      { href: "/products/residential/6.6kw-ultimate", label: "6.6 KW ULTIMATE SYSTEM" },
-      { href: "/products/residential/10kw-ultimate", label: "10 KW ULTIMATE SYSTEM" },
-      { href: "/products/residential/10.5kw-platinum", label: "10.5 KW PLATINUM SYSTEM" },
-      { href: "/products/residential/13.3kw-platinum", label: "13.3KW PLATINUM SYSTEM" },
-      { href: "/products/residential/13.3kw-ultimate", label: "13.3 KW ULTIMATE SYSTEM" },
+      submenu: [
+        { href: "/products/6-6-kw-platinum-system", label: "6.6 KW PLATINUM SYSTEM" },
+        { href: "/products/6-6-kw-boost-system", label: "6.6 KW BOOST SYSTEM" },
+        { href: "/products/6-6-kw-ultimate-system", label: "6.6 KW ULTIMATE SYSTEM" },
+        { href: "/products/10-kw-ultimate-system", label: "10 KW ULTIMATE SYSTEM" },
+        { href: "/products/10-5-kw-platinum-system", label: "10.5 KW PLATINUM SYSTEM" },
+        { href: "/products/13-3kw-platinum-system", label: "13.3KW PLATINUM SYSTEM" },
+        { href: "/products/13-3-kw-ultimate-system", label: "13.3 KW ULTIMATE SYSTEM" },
     ],
   },
   {
@@ -25,27 +25,27 @@ const productCategories = [
   },
   {
     label: "SOLAR BATTERY STORAGE",
-    href: "/products/battery-storage",
+    href: "/solar-battery-storage",
     submenu: null,
   },
   {
     label: "SOLAR SERVICE AND CLEANING",
-    href: "/products/service-cleaning",
+    href: "/solar-service-and-cleaning",
     submenu: null,
   },
   {
     label: "SOLAR EV CHARGERS",
-    href: "/products/ev-chargers",
+    href: "/solar-ev-chargers",
     submenu: null,
   },
   {
     label: "HEAT PUMPS",
-    href: "/products/heat-pumps",
+    href: "/heat-pumps",
     submenu: null,
   },
   {
     label: "AIR CON",
-    href: "/products/air-con",
+    href: "/use-aircon-rebate-2024",
     submenu: null,
   },
 ];
@@ -209,7 +209,7 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/contact-us"
+              href="/contacts"
               className="text-white hover:text-[#FFD700] transition-all duration-200 font-semibold uppercase text-[11px] xl:text-xs tracking-wide px-2 xl:px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap"
             >
               Contact Us
@@ -232,7 +232,7 @@ export default function Header() {
 
             {/* Quote Button */}
             <Link
-              href="/quote"
+              href="/get-a-quote"
               className="bg-[#FFD700] text-[#002866] font-bold px-4 xl:px-5 py-2 xl:py-2.5 text-xs xl:text-sm transition-all duration-300 uppercase tracking-wide whitespace-nowrap rounded shadow-lg hover:shadow-2xl hover:scale-105 relative overflow-hidden group"
             >
               <span className="relative z-10">Get A Free Quote</span>
@@ -380,7 +380,7 @@ export default function Header() {
           </Link>
 
           <Link
-            href="/contact-us"
+            href="/contacts"
             onClick={() => setMobileOpen(false)}
             className="block text-white hover:text-[#FFD700] hover:bg-white/5 font-semibold uppercase text-base py-3 px-4 rounded-lg transition-all duration-200 border-b border-white/10"
           >
@@ -391,7 +391,7 @@ export default function Header() {
         {/* Mobile Menu Footer */}
         <div className="p-6 bg-[#001433] border-t border-white/10 space-y-4">
           <Link
-            href="/quote"
+            href="/get-a-quote"
             onClick={() => setMobileOpen(false)}
             className="block w-full bg-[#FFD700] text-[#002866] font-bold px-6 py-4 text-center hover:bg-yellow-400 uppercase tracking-wide rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
           >

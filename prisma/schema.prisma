@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_URL")
+  //directUrl = env("DIRECT_URL")
+}
+
+// User Model for Authentication
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("user") // user, admin, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  blogs     Blog[]
+
+  @@map("users")
+}
+
+// Blog Model
+model Blog {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  content         String   @db.Text
+  excerpt         String?  @db.Text
+  featuredImage   String?
+  tags            String[] // Array of tags
+  metaDescription String?
+  status          String   @default("draft") // draft, published
+  publishedAt     DateTime?
+  views           Int      @default(0)
+  author          User     @relation(fields: [authorId], references: [id])
+  authorId        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("blogs")
+}
