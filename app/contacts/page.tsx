@@ -1,8 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckCircle, X } from "lucide-react";
+import Script from "next/script";
+
+// reCAPTCHA site key
+const RECAPTCHA_SITE_KEY = "6LfRKwIsAAAAABGAKdjd5rUK7mmR_QJ355GlV4_U";
+
+// Declare grecaptcha on window
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -17,6 +28,7 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -33,12 +45,29 @@ export default function ContactPage() {
     setError("");
 
     try {
+      // Execute reCAPTCHA v3
+      if (!window.grecaptcha) {
+        setError("Security verification not loaded. Please refresh the page.");
+        setLoading(false);
+        return;
+      }
+
+      const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
+        action: "contact_form",
+      });
+
+      console.log("✅ reCAPTCHA token generated");
+
+      // Submit form with reCAPTCHA token
       const response = await fetch("/api/contacts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken: token,
+        }),
       });
 
       const data = await response.json();
@@ -62,6 +91,7 @@ export default function ContactPage() {
         setError(data.error || "Something went wrong. Please try again.");
       }
     } catch (err) {
+      console.error("Form submission error:", err);
       setError("Failed to send message. Please check your connection.");
     } finally {
       setLoading(false);
@@ -70,6 +100,18 @@ export default function ContactPage() {
 
   return (
     <>
+      {/* Load reCAPTCHA v3 Script */}
+      <Script
+        src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`}
+        onLoad={() => {
+          console.log("✅ reCAPTCHA v3 loaded");
+          setRecaptchaLoaded(true);
+        }}
+        onError={() => {
+          console.error("❌ Failed to load reCAPTCHA");
+          setError("Security verification failed to load. Please refresh the page.");
+        }}
+      />
 
       <main className="w-full bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -372,30 +414,7 @@ export default function ContactPage() {
               ></textarea>
             </div>
 
-            {/* reCAPTCHA */}
-            <div className="flex justify-start">
-              <div className="bg-white p-3 inline-block">
-                <div className="flex items-center gap-3">
-                  <input type="checkbox" id="recaptcha" className="w-6 h-6" required />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-700">protected by reCAPTCHA</p>
-                    <p className="text-xs text-blue-600">
-                      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:underline">Privacy</a>
-                      {" - "}
-                      <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="hover:underline">Terms</a>
-                    </p>
-                  </div>
-                  <div className="ml-4">
-                    <svg viewBox="0 0 24 24" className="w-10 h-10 text-blue-500">
-                      <path
-                        fill="currentColor"
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
 
             {/* Submit Button */}
             <div className="flex justify-center pt-4">
@@ -432,6 +451,29 @@ export default function ContactPage() {
                   "Contact Us"
                 )}
               </button>
+            </div>
+
+            {/* reCAPTCHA Notice */}
+            <div className="text-center text-xs text-gray-500 mt-4">
+              This site is protected by reCAPTCHA and the Google{" "}
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#002866] hover:underline"
+              >
+                Privacy Policy
+              </a>{" "}
+              and{" "}
+              <a
+                href="https://policies.google.com/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#002866] hover:underline"
+              >
+                Terms of Service
+              </a>{" "}
+              apply.
             </div>
           </form>
             </>

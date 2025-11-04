@@ -11,6 +11,8 @@ import {
   Inbox,
   PhoneCall,
   CheckCircle,
+  ShoppingCart,
+  Package,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -27,6 +29,13 @@ export default function DashboardPage() {
     completed: 0,
     recentContacts: [],
   });
+  const [quotationStats, setQuotationStats] = useState({
+    total: 0,
+    new: 0,
+    contacted: 0,
+    completed: 0,
+    recentQuotations: [],
+  });
   const [recentBlogs, setRecentBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,9 +46,10 @@ export default function DashboardPage() {
 
   const fetchDashboardStats = async () => {
     try {
-      const [blogRes, contactRes] = await Promise.all([
+      const [blogRes, contactRes, quotationRes] = await Promise.all([
         fetch("/api/blogs/stats"),
         fetch("/api/contacts/stats"),
+        fetch("/api/quotations/stats"),
       ]);
 
       if (blogRes.ok) {
@@ -57,6 +67,12 @@ export default function DashboardPage() {
         const contactData = await contactRes.json();
         setContactStats(contactData);
       }
+
+      if (quotationRes.ok) {
+        const quotationData = await quotationRes.json();
+        setQuotationStats(quotationData);
+      }
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -73,22 +89,8 @@ export default function DashboardPage() {
       lightColor: "bg-blue-50",
       textColor: "text-blue-600",
     },
-    {
-      title: "Published",
-      value: stats.publishedBlogs,
-      icon: Eye,
-      color: "bg-green-500",
-      lightColor: "bg-green-50",
-      textColor: "text-green-600",
-    },
-    {
-      title: "Drafts",
-      value: stats.draftBlogs,
-      icon: Edit,
-      color: "bg-yellow-500",
-      lightColor: "bg-yellow-50",
-      textColor: "text-yellow-600",
-    },
+    
+    
     {
       title: "Total Views",
       value: stats.totalViews.toLocaleString(),
@@ -105,30 +107,16 @@ export default function DashboardPage() {
       lightColor: "bg-[#002866]/10",
       textColor: "text-[#002866]",
     },
+    
     {
-      title: "New Inquiries",
-      value: contactStats.new,
-      icon: Inbox,
-      color: "bg-[#FDB714]",
-      lightColor: "bg-[#FDB714]/20",
-      textColor: "text-[#C68A00]",
+      title: "Total Quotes",
+      value: quotationStats.total,
+      icon: ShoppingCart,
+      color: "bg-purple-500",
+      lightColor: "bg-purple-50",
+      textColor: "text-purple-600",
     },
-    {
-      title: "Contacted",
-      value: contactStats.contacted,
-      icon: PhoneCall,
-      color: "bg-blue-500",
-      lightColor: "bg-blue-50",
-      textColor: "text-blue-600",
-    },
-    {
-      title: "Completed",
-      value: contactStats.completed,
-      icon: CheckCircle,
-      color: "bg-green-500",
-      lightColor: "bg-green-50",
-      textColor: "text-green-600",
-    },
+    
   ];
 
   return (
@@ -253,53 +241,107 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Contacts */}
-      <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-[#002866]">Recent Inquiries</h2>
-          <Link href="/dashboard/contacts" className="text-[#FDB714] hover:text-[#002866] font-semibold text-sm transition-colors">
-            View Contacts →
-          </Link>
-        </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-6">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#002866]"></div>
-          </div>
-        ) : contactStats.recentContacts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {contactStats.recentContacts.map((contact: any) => (
-              <div
-                key={contact.id}
-                className="border border-gray-200 rounded-lg p-4 hover:border-[#FDB714] hover:shadow-md transition-all duration-200"
-              >
-                <p className="font-semibold text-gray-900">
-                  {contact.firstName} {contact.lastName}
-                </p>
-                <p className="text-sm text-gray-500 mb-2">{contact.email}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      contact.status === "new"
-                        ? "bg-blue-100 text-blue-700"
-                        : contact.status === "contacted"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {contact.status}
-                  </span>
-                  <span className="text-gray-500">{contact.date}</span>
-                </div>
+      
+          {/* Recent Contacts */}
+          <div className="mt-6 bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#002866]">Recent Inquiries</h2>
+              <Link href="/dashboard/contacts" className="text-[#FDB714] hover:text-[#002866] font-semibold text-sm transition-colors">
+                View Contacts →
+              </Link>
+            </div>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-6">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#002866]"></div>
               </div>
-            ))}
+            ) : contactStats.recentContacts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {contactStats.recentContacts.map((contact: any) => (
+                  <div
+                    key={contact.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:border-[#FDB714] hover:shadow-md transition-all duration-200"
+                  >
+                    <p className="font-semibold text-gray-900">
+                      {contact.firstName} {contact.lastName}
+                    </p>
+                    <p className="text-sm text-gray-500 mb-2">{contact.email}</p>
+                    <div className="flex items-center justify-between text-sm">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          contact.status === "new"
+                            ? "bg-blue-100 text-blue-700"
+                            : contact.status === "contacted"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {contact.status}
+                      </span>
+                      <span className="text-gray-500">{contact.date}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-gray-500">
+                No contact inquiries yet.
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="text-center py-10 text-gray-500">
-            No contact inquiries yet.
+
+          {/* Recent Quotations */}
+          <div className="mt-6 bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#002866]">Recent Quote Requests</h2>
+              <Link href="/dashboard/quotes" className="text-[#FDB714] hover:text-[#002866] font-semibold text-sm transition-colors">
+                View All Quotes →
+              </Link>
+            </div>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-6">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#002866]"></div>
+              </div>
+            ) : quotationStats.recentQuotations.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {quotationStats.recentQuotations.map((quotation: any) => (
+                  <div
+                    key={quotation.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:border-[#FDB714] hover:shadow-md transition-all duration-200"
+                  >
+                    <p className="font-semibold text-gray-900">
+                      {quotation.firstName} {quotation.lastName}
+                    </p>
+                    <p className="text-sm text-gray-500 mb-1">{quotation.email}</p>
+                    <p className="text-xs text-[#002866] font-semibold mb-2">
+                      {quotation.lookingFor}
+                    </p>
+                    <div className="flex items-center justify-between text-sm">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          quotation.status === "new"
+                            ? "bg-purple-100 text-purple-700"
+                            : quotation.status === "contacted"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {quotation.status}
+                      </span>
+                      <span className="text-gray-500">{quotation.date}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-gray-500">
+                No quote requests yet.
+              </div>
+            )}
           </div>
-        )}
-      </div>
+      
     </DashboardLayout>
   );
 }

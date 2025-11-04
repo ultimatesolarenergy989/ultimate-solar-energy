@@ -65,7 +65,7 @@ model Blog {
   @@map("blogs")
 }
 
-// Contact/Quotation Model
+// Contact Model
 model Contact {
   id        String   @id @default(uuid())
   firstName String
@@ -80,6 +80,27 @@ model Contact {
   updatedAt DateTime @updatedAt
 
   @@map("contacts")
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Quotation Model
+model Quotation {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  phone       String
+  email       String
+  state       String?
+  postCode    String
+  lookingFor  String   // What they're looking for (solar-panels, battery, etc.)
+  categories  String[] // Array of categories (residence, business)
+  status      String   @default("new") // new, contacted, completed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("quotations")
   @@index([email])
   @@index([status])
   @@index([createdAt])

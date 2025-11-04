@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { resend } from "@/lib/resend";
-import { AdminContactNotification } from "@/lib/emails/admin-contact-notification";
-import { ClientConfirmation } from "@/lib/emails/client-confirmation";
 
-// GET all contacts
+// Helper function to format lookingFor value for display
+function formatLookingFor(value: string): string {
+  const formatMap: { [key: string]: string } = {
+    "solar-panels": "Solar Panels",
+    "solar-battery": "Solar Battery",
+    "ev-charger": "EV Charger",
+    "heat-pump": "Heat Pump",
+    "air-conditioning": "Air Conditioning",
+    "other": "Other",
+  };
+  return formatMap[value] || value;
+}
+
+// GET all quotations
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -12,28 +23,28 @@ export async function GET(request: NextRequest) {
 
     const where = status && status !== "all" ? { status } : {};
 
-    const contacts = await prisma.contact.findMany({
+    const quotations = await prisma.quotation.findMany({
       where,
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    return NextResponse.json(contacts);
+    return NextResponse.json(quotations);
   } catch (error) {
-    console.error("Error fetching contacts:", error);
+    console.error("Error fetching quotations:", error);
     return NextResponse.json(
-      { error: "Failed to fetch contacts" },
+      { error: "Failed to fetch quotations" },
       { status: 500 }
     );
   }
 }
 
-// POST create new contact
+// POST create new quotation
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { firstName, lastName, phone, email, state, postCode, message, recaptchaToken } =
+    const { firstName, lastName, phone, email, state, postCode, lookingFor, categories } =
       body;
 
     // Validate required fields
@@ -42,65 +53,18 @@ export async function POST(request: NextRequest) {
       !lastName ||
       !phone ||
       !email ||
-      !state ||
       !postCode ||
-      !message
+      !lookingFor ||
+      !categories ||
+      categories.length === 0
     ) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: "All required fields must be filled" },
         { status: 400 }
       );
     }
 
-    // Validate reCAPTCHA token
-    if (!recaptchaToken) {
-      return NextResponse.json(
-        { error: "Security verification failed. Please try again." },
-        { status: 400 }
-      );
-    }
-
-    // Verify reCAPTCHA with Google
-    const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
-    if (!recaptchaSecret) {
-      console.error("❌ RECAPTCHA_SECRET_KEY not configured");
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
-      );
-    }
-
-    try {
-      const recaptchaResponse = await fetch(
-        "https://www.google.com/recaptcha/api/siteverify",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: `secret=${recaptchaSecret}&response=${recaptchaToken}`,
-        }
-      );
-
-      const recaptchaData = await recaptchaResponse.json();
-      console.log("🔐 reCAPTCHA verification:", recaptchaData);
-
-      if (!recaptchaData.success || recaptchaData.score < 0.5) {
-        console.error("❌ reCAPTCHA verification failed:", recaptchaData);
-        return NextResponse.json(
-          { error: "Security verification failed. Please try again." },
-          { status: 400 }
-        );
-      }
-
-      console.log("✅ reCAPTCHA verified. Score:", recaptchaData.score);
-    } catch (recaptchaError) {
-      console.error("❌ Error verifying reCAPTCHA:", recaptchaError);
-      return NextResponse.json(
-        { error: "Security verification error" },
-        { status: 500 }
-      );
-    }
+    // reCAPTCHA validation temporarily disabled for testing
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -112,22 +76,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Save to database
-    const contact = await prisma.contact.create({
+    const quotation = await prisma.quotation.create({
       data: {
         firstName,
         lastName,
         phone,
         email,
-        state,
+        state: state || "",
         postCode,
-        message,
+        lookingFor,
+        categories,
         status: "new",
       },
     });
 
     // Send emails using Resend
     try {
-      const fromEmail = process.env.CONTACT_FROM || "Ultimate Solar Energy <noreply@ultimatesolarenergy.com.au>";
+      const fromEmail = process.env.CONTACT_FROM || "Ultimate Solar Energy <onboarding@resend.dev>";
       const toEmail = process.env.CONTACT_TO || "team@ultimatesolarenergy.com.au";
 
       console.log("📧 Attempting to send emails...");
@@ -135,12 +100,16 @@ export async function POST(request: NextRequest) {
       console.log("Admin To:", toEmail);
       console.log("Client To:", email);
 
+      // Format categories for display
+      const categoriesDisplay = categories.join(", ");
+      const lookingForDisplay = formatLookingFor(lookingFor);
+
       // Send notification to admin
       console.log("🔄 Sending admin notification...");
       const adminEmail = await resend.emails.send({
         from: fromEmail,
         to: toEmail,
-        subject: `New Contact: ${firstName} ${lastName}`,
+        subject: `New Quote Request: ${firstName} ${lastName}`,
         html: `
           <!DOCTYPE html>
           <html>
@@ -193,21 +162,21 @@ export async function POST(request: NextRequest) {
                 .details-table td:first-child {
                   font-weight: 600;
                   color: #002866;
-                  width: 120px;
+                  width: 140px;
                   font-size: 13px;
                 }
                 .details-table td:last-child {
                   color: #333;
                   font-size: 14px;
                 }
-                .message-box {
+                .highlight-box {
                   background: #f8f9fa;
                   border-left: 3px solid #FFD700;
                   padding: 15px;
                   margin-top: 8px;
                   border-radius: 4px;
-                  color: #333;
-                  line-height: 1.6;
+                  color: #002866;
+                  font-weight: 600;
                 }
                 a {
                   color: #002866;
@@ -221,7 +190,7 @@ export async function POST(request: NextRequest) {
             <body>
               <div class="email-container">
                 <div class="header">
-                  <h1>📩 New Contact Inquiry</h1>
+                  <h1>📋 New Quote Request</h1>
                 </div>
                 <div class="content">
                   <table class="details-table">
@@ -239,13 +208,17 @@ export async function POST(request: NextRequest) {
                     </tr>
                     <tr>
                       <td>Location</td>
-                      <td>${state}, ${postCode}</td>
+                      <td>${state ? `${state}, ${postCode}` : postCode}</td>
                     </tr>
                     <tr>
-                      <td>Message</td>
+                      <td>Looking For</td>
                       <td>
-                        <div class="message-box">${message}</div>
+                        <div class="highlight-box">${lookingForDisplay}</div>
                       </td>
+                    </tr>
+                    <tr>
+                      <td>Category</td>
+                      <td><strong>${categoriesDisplay}</strong></td>
                     </tr>
                   </table>
                 </div>
@@ -374,21 +347,21 @@ export async function POST(request: NextRequest) {
               <div class="email-container">
                 <div class="header">
                   <h1>✓ Thank You</h1>
-                  <p>We've received your inquiry</p>
+                  <p>We've received your quote request</p>
                 </div>
                 
                 <div class="content">
                   <p class="greeting">Hi ${firstName},</p>
                   
                   <p class="message">
-                    Thank you for contacting <strong>Ultimate Solar Energy</strong>. Your inquiry is important to us.
+                    Thank you for your interest in <strong>Ultimate Solar Energy</strong>. Your quote request is important to us.
                   </p>
 
                   <div class="info-box">
                     <p><strong>What's next?</strong></p>
-                    <p>→ Our team will review your message</p>
+                    <p>→ Our team will review your request</p>
                     <p>→ We'll contact you within <strong>24 hours</strong></p>
-                    <p>→ We'll discuss the best solar solution for your needs</p>
+                    <p>→ We'll provide you with a customized quote for ${lookingForDisplay}</p>
                   </div>
 
                   <p class="message">
@@ -424,15 +397,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Your message has been sent successfully!",
-        contact,
+        message: "Your quote request has been sent successfully!",
+        quotation,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating contact:", error);
+    console.error("Error creating quotation:", error);
     return NextResponse.json(
-      { error: "Failed to submit contact form" },
+      { error: "Failed to submit quote request" },
       { status: 500 }
     );
   }

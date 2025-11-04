@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   Mail,
+  ShoppingCart,
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -77,6 +78,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       name: "Contact Inquiries",
       href: "/dashboard/contacts",
       icon: Mail,
+    },
+    {
+      name: "Quote Requests",
+      href: "/dashboard/quotes",
+      icon: ShoppingCart,
     },
     {
       name: "Profile & Settings",
@@ -157,7 +163,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
 
         {/* Menu Items */}
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-2 pb-24">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -188,11 +194,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
         </nav>
 
-        {/* Bottom Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 text-xs text-gray-400">
-          <p>© 2024 Ultimate Solar Energy</p>
-          <p>v1.0.0</p>
-        </div>
+       
       </aside>
 
       {/* Overlay for mobile */}

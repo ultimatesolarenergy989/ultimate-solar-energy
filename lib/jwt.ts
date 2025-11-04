@@ -69,7 +69,19 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
     console.log('✅ JWT: Token verified successfully');
     console.log('🟠 JWT: User ID from token:', payload.userId);
     
-    return payload as TokenPayload;
+    // Validate payload structure and cast through unknown
+    if (
+      typeof payload === 'object' &&
+      payload !== null &&
+      'userId' in payload &&
+      'email' in payload &&
+      'role' in payload
+    ) {
+      return payload as unknown as TokenPayload;
+    }
+    
+    console.error('🔴 JWT: Invalid payload structure');
+    return null;
   } catch (error) {
     // Token is invalid, expired, or malformed
     console.error('🔴 JWT: Token verification failed!');
@@ -93,7 +105,18 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
  */
 export function decodeToken(token: string): TokenPayload | null {
   try {
-    return decodeJwt(token) as TokenPayload;
+    const payload = decodeJwt(token);
+    // Validate payload structure and cast through unknown
+    if (
+      typeof payload === 'object' &&
+      payload !== null &&
+      'userId' in payload &&
+      'email' in payload &&
+      'role' in payload
+    ) {
+      return payload as unknown as TokenPayload;
+    }
+    return null;
   } catch (error) {
     return null;
   }
