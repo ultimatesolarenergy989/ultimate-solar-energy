@@ -193,8 +193,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span>Logout</span>
           </button>
         </nav>
-
-       
       </aside>
 
       {/* Overlay for mobile */}
