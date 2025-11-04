@@ -167,12 +167,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       )}
 
       {/* Main Content */}
-      <div className="lg:ml-64 min-h-screen">
+      <div className="lg:ml-64 min-h-screen overflow-y-auto">
         {/* Top spacing for mobile */}
         <div className="h-16 lg:hidden" />
 
         {/* Content Area */}
-        <main className="p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="p-4 sm:p-6 lg:p-8 pb-20">{children}</main>
       </div>
     </div>
   );
