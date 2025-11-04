@@ -18,6 +18,16 @@ function SignInForm() {
     const error = searchParams.get('error');
     if (error === 'session_expired') {
       setErrorMessage('Your session has expired. Please sign in again.');
+      
+      // Clear the error from URL after showing it
+      window.history.replaceState({}, '', '/sign-in');
+      
+      // Auto-clear the error message after 5 seconds
+      const timer = setTimeout(() => {
+        setErrorMessage("");
+      }, 5000);
+      
+      return () => clearTimeout(timer);
     }
   }, [searchParams]);
 
@@ -26,7 +36,14 @@ function SignInForm() {
     e.preventDefault();
     setIsLoading(true);
 
+    console.log('Starting login attempt...');
+
     try {
+      // Add timeout to prevent infinite loading
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      console.log('Sending login request...');
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -34,26 +51,38 @@ function SignInForm() {
         },
         body: JSON.stringify({ email, password }),
         credentials: 'include', // Important for cookies
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+      console.log('Response received:', response.status);
+
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (response.ok) {
+        console.log('Login successful!');
         // Store user data in localStorage for client-side use
         localStorage.setItem('user', JSON.stringify(data.user));
         
         // Get redirect parameter or default to dashboard
         const redirect = searchParams.get('redirect') || '/dashboard';
         
+        console.log('Redirecting to:', redirect);
         // Redirect after successful login
         router.push(redirect);
       } else {
+        console.error('Login failed:', data.error);
         setErrorMessage(data.error || 'Login failed');
         setIsLoading(false);
       }
     } catch (error) {
       console.error('Login error:', error);
-      setErrorMessage('An error occurred during login. Please try again.');
+      if (error instanceof Error && error.name === 'AbortError') {
+        setErrorMessage('Request timeout. Please check your connection and try again.');
+      } else {
+        setErrorMessage('An error occurred during login. Please try again.');
+      }
       setIsLoading(false);
     }
   };

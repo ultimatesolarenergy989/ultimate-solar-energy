@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     // If token exists, delete the session from database
     if (token) {
-      const payload = verifyToken(token);
+      const payload = await verifyToken(token);
       
       if (payload && payload.sessionId) {
         // Delete specific session

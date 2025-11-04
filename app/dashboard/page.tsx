@@ -2,7 +2,16 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import Link from "next/link";
-import { FileText, Edit, Eye, PlusCircle } from "lucide-react";
+import {
+  FileText,
+  Edit,
+  Eye,
+  PlusCircle,
+  Users,
+  Inbox,
+  PhoneCall,
+  CheckCircle,
+} from "lucide-react";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -10,6 +19,13 @@ export default function DashboardPage() {
     publishedBlogs: 0,
     draftBlogs: 0,
     totalViews: 0,
+  });
+  const [contactStats, setContactStats] = useState({
+    total: 0,
+    new: 0,
+    contacted: 0,
+    completed: 0,
+    recentContacts: [],
   });
   const [recentBlogs, setRecentBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,10 +37,13 @@ export default function DashboardPage() {
 
   const fetchDashboardStats = async () => {
     try {
-      const response = await fetch("/api/blogs/stats");
-      const data = await response.json();
-      
-      if (response.ok) {
+      const [blogRes, contactRes] = await Promise.all([
+        fetch("/api/blogs/stats"),
+        fetch("/api/contacts/stats"),
+      ]);
+
+      if (blogRes.ok) {
+        const data = await blogRes.json();
         setStats({
           totalBlogs: data.totalBlogs,
           publishedBlogs: data.publishedBlogs,
@@ -32,6 +51,11 @@ export default function DashboardPage() {
           totalViews: data.totalViews,
         });
         setRecentBlogs(data.recentBlogs);
+      }
+
+      if (contactRes.ok) {
+        const contactData = await contactRes.json();
+        setContactStats(contactData);
       }
       setLoading(false);
     } catch (error) {
@@ -73,6 +97,38 @@ export default function DashboardPage() {
       lightColor: "bg-purple-50",
       textColor: "text-purple-600",
     },
+    {
+      title: "Total Inquiries",
+      value: contactStats.total,
+      icon: Users,
+      color: "bg-[#002866]",
+      lightColor: "bg-[#002866]/10",
+      textColor: "text-[#002866]",
+    },
+    {
+      title: "New Inquiries",
+      value: contactStats.new,
+      icon: Inbox,
+      color: "bg-[#FDB714]",
+      lightColor: "bg-[#FDB714]/20",
+      textColor: "text-[#C68A00]",
+    },
+    {
+      title: "Contacted",
+      value: contactStats.contacted,
+      icon: PhoneCall,
+      color: "bg-blue-500",
+      lightColor: "bg-blue-50",
+      textColor: "text-blue-600",
+    },
+    {
+      title: "Completed",
+      value: contactStats.completed,
+      icon: CheckCircle,
+      color: "bg-green-500",
+      lightColor: "bg-green-50",
+      textColor: "text-green-600",
+    },
   ];
 
   return (
@@ -84,7 +140,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -133,6 +189,13 @@ export default function DashboardPage() {
             >
               <Edit size={20} />
               <span className="font-semibold">Edit Profile</span>
+            </Link>
+            <Link
+              href="/dashboard/contacts"
+              className="flex items-center gap-3 p-4 border-2 border-[#002866]/20 text-[#002866] rounded-lg hover:bg-[#002866]/10 transition-all duration-300"
+            >
+              <Users size={20} />
+              <span className="font-semibold">Manage Contacts</span>
             </Link>
           </div>
         </div>
@@ -188,6 +251,54 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Recent Contacts */}
+      <div className="mt-6 bg-white rounded-lg shadow-md p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-[#002866]">Recent Inquiries</h2>
+          <Link href="/dashboard/contacts" className="text-[#FDB714] hover:text-[#002866] font-semibold text-sm transition-colors">
+            View Contacts →
+          </Link>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-6">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#002866]"></div>
+          </div>
+        ) : contactStats.recentContacts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {contactStats.recentContacts.map((contact: any) => (
+              <div
+                key={contact.id}
+                className="border border-gray-200 rounded-lg p-4 hover:border-[#FDB714] hover:shadow-md transition-all duration-200"
+              >
+                <p className="font-semibold text-gray-900">
+                  {contact.firstName} {contact.lastName}
+                </p>
+                <p className="text-sm text-gray-500 mb-2">{contact.email}</p>
+                <div className="flex items-center justify-between text-sm">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      contact.status === "new"
+                        ? "bg-blue-100 text-blue-700"
+                        : contact.status === "contacted"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-green-100 text-green-700"
+                    }`}
+                  >
+                    {contact.status}
+                  </span>
+                  <span className="text-gray-500">{contact.date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10 text-gray-500">
+            No contact inquiries yet.
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

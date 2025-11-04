@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Create JWT token with session ID
-    const jwtToken = signToken(user.id, user.email, user.role, session.id);
+    const jwtToken = await signToken(user.id, user.email, user.role, session.id);
 
     // Update session with JWT token
     await prisma.session.update({

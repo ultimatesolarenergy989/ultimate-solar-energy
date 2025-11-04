@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   X,
+  Mail,
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -71,6 +72,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       name: "Create New Blog",
       href: "/dashboard/blogs/new",
       icon: PlusCircle,
+    },
+    {
+      name: "Contact Inquiries",
+      href: "/dashboard/contacts",
+      icon: Mail,
     },
     {
       name: "Profile & Settings",

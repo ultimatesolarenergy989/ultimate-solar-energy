@@ -1,8 +1,76 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import { CheckCircle, X } from "lucide-react";
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    state: "",
+    postCode: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setShowSuccess(true);
+        setFormData({
+          firstName: "",
+          lastName: "",
+          phone: "",
+          email: "",
+          state: "",
+          postCode: "",
+          message: "",
+        });
+        // Auto-hide success message after 8 seconds
+        setTimeout(() => {
+          setShowSuccess(false);
+        }, 8000);
+      } else {
+        setError(data.error || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setError("Failed to send message. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
+
       <main className="w-full bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Heading */}
@@ -112,8 +180,86 @@ export default function ContactPage() {
             </p>
           </div>
 
-          {/* Contact Form */}
-          <form className="space-y-6">
+          {/* Success Message - Replaces Form */}
+          {showSuccess ? (
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white rounded-xl shadow-2xl overflow-hidden border-t-4 border-[#002866]">
+                {/* Success Icon */}
+                <div className="bg-gradient-to-br from-[#002866] to-[#003580] p-12 text-center">
+                  <div className="w-24 h-24 bg-[#FFD700] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <CheckCircle className="w-14 h-14 text-[#002866]" strokeWidth={3} />
+                  </div>
+                  <h2 className="text-4xl font-bold text-white mb-3">Thank You!</h2>
+                  <p className="text-white/90 text-lg">Your message has been sent successfully</p>
+                </div>
+
+                {/* Message Content */}
+                <div className="p-8 md:p-12 text-center">
+                  <div className="mb-8">
+                    <h3 className="text-2xl font-bold text-[#002866] mb-4">
+                      We've Received Your Inquiry
+                    </h3>
+                    <p className="text-gray-600 text-lg leading-relaxed mb-6">
+                      Our team will review your message and get back to you within <strong className="text-[#002866]">24 hours</strong>.
+                      We're excited to help you with your solar energy needs!
+                    </p>
+                    
+                    <div className="bg-gradient-to-r from-[#FFD700]/10 to-[#FDB714]/10 border-l-4 border-[#FFD700] p-6 rounded-lg mb-8">
+                      <p className="text-[#002866] font-semibold">
+                        ✉️ A confirmation email has been sent to your inbox
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                    <p className="text-gray-700 font-semibold mb-4">Need immediate assistance?</p>
+                    <div className="space-y-2">
+                      <a
+                        href="tel:1300661388"
+                        className="text-[#002866] hover:text-[#FFD700] transition-colors text-lg font-semibold"
+                      >
+                        📞 1300 661 388
+                      </a>
+                      <br />
+                      <a
+                        href="mailto:team@ultimatesolarenergy.com.au"
+                        className="text-[#002866] hover:text-[#FFD700] transition-colors"
+                      >
+                        ✉️ team@ultimatesolarenergy.com.au
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button
+                      onClick={() => setShowSuccess(false)}
+                      className="px-8 py-3 border-2 border-[#002866] text-[#002866] font-bold rounded-lg hover:bg-[#002866] hover:text-white transition-all duration-300 uppercase text-sm"
+                    >
+                      Send Another Message
+                    </button>
+                    <a
+                      href="/"
+                      className="px-8 py-3 bg-[#002866] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 shadow-lg hover:shadow-xl uppercase text-sm"
+                    >
+                      Back to Home
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Error Message */}
+              {error && (
+                <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                  <p className="text-red-700 font-semibold">{error}</p>
+                </div>
+              )}
+
+              {/* Contact Form */}
+              <form onSubmit={handleSubmit} className="space-y-6">
             {/* First Row: First Name & Last Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -124,6 +270,8 @@ export default function ContactPage() {
                   type="text"
                   id="firstName"
                   name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-0 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002866] transition-all"
                 />
@@ -136,6 +284,8 @@ export default function ContactPage() {
                   type="text"
                   id="lastName"
                   name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-0 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002866] transition-all"
                 />
@@ -152,6 +302,8 @@ export default function ContactPage() {
                   type="tel"
                   id="phone"
                   name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-0 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002866] transition-all"
                 />
@@ -164,6 +316,8 @@ export default function ContactPage() {
                   type="email"
                   id="email"
                   name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-0 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002866] transition-all"
                 />
@@ -180,6 +334,8 @@ export default function ContactPage() {
                   type="text"
                   id="state"
                   name="state"
+                  value={formData.state}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-0 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002866] transition-all"
                 />
@@ -192,6 +348,8 @@ export default function ContactPage() {
                   type="text"
                   id="postCode"
                   name="postCode"
+                  value={formData.postCode}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-0 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002866] transition-all"
                 />
@@ -207,6 +365,8 @@ export default function ContactPage() {
                 id="message"
                 name="message"
                 rows={5}
+                value={formData.message}
+                onChange={handleChange}
                 required
                 className="w-full px-4 py-3 border-0 bg-white/90 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002866] transition-all resize-none"
               ></textarea>
@@ -241,12 +401,41 @@ export default function ContactPage() {
             <div className="flex justify-center pt-4">
               <button
                 type="submit"
-                className="bg-[#002866] text-white font-bold px-12 py-4 uppercase text-lg hover:bg-[#003580] transition-all duration-300 shadow-lg hover:shadow-xl"
+                disabled={loading}
+                className="bg-[#002866] text-white font-bold px-12 py-4 uppercase text-lg hover:bg-[#003580] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Contact Us
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  "Contact Us"
+                )}
               </button>
             </div>
           </form>
+            </>
+          )}
         </div>
       </section>
     </>
