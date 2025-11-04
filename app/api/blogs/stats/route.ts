@@ -39,7 +39,12 @@ export async function GET() {
     });
 
     // Format recent blogs
-    const formattedRecentBlogs = recentBlogs.map((blog) => ({
+    const formattedRecentBlogs = recentBlogs.map((blog: {
+      id: string;
+      title: string;
+      status: string;
+      createdAt: Date;
+    }) => ({
       ...blog,
       date: new Date(blog.createdAt).toLocaleDateString("en-US", {
         year: "numeric",
