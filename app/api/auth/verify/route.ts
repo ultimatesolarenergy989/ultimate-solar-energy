@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { verifyToken } from '@/lib/jwt';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,9 +14,33 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Find user by ID (token is the user ID)
+    // Verify JWT token
+    const payload = verifyToken(token);
+
+    if (!payload) {
+      return NextResponse.json(
+        { error: 'Invalid or expired token' },
+        { status: 401 }
+      );
+    }
+
+    // Verify session exists in database and hasn't expired
+    if (payload.sessionId) {
+      const session = await prisma.session.findUnique({
+        where: { id: payload.sessionId },
+      });
+
+      if (!session || session.expiresAt < new Date()) {
+        return NextResponse.json(
+          { error: 'Session expired or invalid' },
+          { status: 401 }
+        );
+      }
+    }
+
+    // Find user by ID from JWT payload
     const user = await prisma.user.findUnique({
-      where: { id: token },
+      where: { id: payload.userId },
       select: {
         id: true,
         email: true,

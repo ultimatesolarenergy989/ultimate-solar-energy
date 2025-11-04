@@ -13,16 +13,35 @@ datasource db {
 
 // User Model for Authentication
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String    @id @default(uuid())
+  email     String    @unique
   password  String
   name      String?
-  role      String   @default("user") // user, admin, etc.
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      String    @default("user") // user, admin, etc.
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   blogs     Blog[]
+  sessions  Session[]
 
   @@map("users")
+}
+
+// Session Model for secure session management
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+  @@index([userId])
+  @@index([token])
 }
 
 // Blog Model

@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Hash new password with increased rounds for better security
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
 
     // Update password in database
     await prisma.user.update({
