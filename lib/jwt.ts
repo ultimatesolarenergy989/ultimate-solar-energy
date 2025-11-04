@@ -29,9 +29,9 @@ export function signToken(userId: string, email: string, role: string, sessionId
   };
 
   return jwt.sign(payload, JWT_SECRET!, {
-    expiresIn: JWT_EXPIRES_IN,
+    expiresIn: JWT_EXPIRES_IN as string,
     algorithm: 'HS256',
-  });
+  } as jwt.SignOptions);
 }
 
 /**
