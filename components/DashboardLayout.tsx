@@ -79,6 +79,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     },
   ];
 
+
+
+
+  
   // Show loading state while checking authentication
   if (isLoading) {
     return (
