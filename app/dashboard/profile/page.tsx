@@ -40,21 +40,33 @@ export default function ProfilePage() {
     setLoading(true);
 
     try {
-      // TODO: Implement API call to update profile
-      console.log("Updating profile:", {
-        name: formData.name,
-        email: formData.email,
+      const response = await fetch("/api/profile/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          name: formData.name,
+          email: formData.email,
+        }),
       });
 
-      // Update localStorage
-      const updatedUser = { ...user, name: formData.name, email: formData.email };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      const data = await response.json();
 
-      alert("Profile updated successfully!");
+      if (response.ok) {
+        // Update localStorage with new user data
+        const updatedUser = { ...user, name: data.user.name, email: data.user.email };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setUser(updatedUser);
+
+        alert("Profile updated successfully!");
+      } else {
+        alert(data.error || "Failed to update profile");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Failed to update profile");
+      alert("Failed to update profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -73,23 +85,44 @@ export default function ProfilePage() {
       return;
     }
 
+    if (!formData.currentPassword) {
+      alert("Please enter your current password!");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // TODO: Implement API call to update password
-      console.log("Updating password");
-
-      setFormData({
-        ...formData,
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
+      const response = await fetch("/api/profile/update-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+        }),
       });
 
-      alert("Password updated successfully!");
+      const data = await response.json();
+
+      if (response.ok) {
+        // Clear password fields
+        setFormData({
+          ...formData,
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+
+        alert("Password updated successfully!");
+      } else {
+        alert(data.error || "Failed to update password");
+      }
     } catch (error) {
       console.error("Error updating password:", error);
-      alert("Failed to update password");
+      alert("Failed to update password. Please try again.");
     } finally {
       setLoading(false);
     }

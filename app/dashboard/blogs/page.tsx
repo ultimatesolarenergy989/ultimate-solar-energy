@@ -2,13 +2,15 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import Link from "next/link";
-import { Search, Edit, Trash2, Eye, PlusCircle, Filter } from "lucide-react";
+import { Search, Edit, Trash2, Eye, PlusCircle, Filter, AlertTriangle, X } from "lucide-react";
 
 export default function AllBlogsPage() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all"); // all, published, draft
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [blogToDelete, setBlogToDelete] = useState<any>(null);
 
   useEffect(() => {
     fetchBlogs();
@@ -39,23 +41,34 @@ export default function AllBlogsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this blog?")) {
-      try {
-        const response = await fetch(`/api/blogs/${id}`, {
-          method: "DELETE",
-        });
+  const openDeleteModal = (blog: any) => {
+    setBlogToDelete(blog);
+    setShowDeleteModal(true);
+  };
 
-        if (response.ok) {
-          alert("Blog deleted successfully!");
-          fetchBlogs(); // Refresh the list
-        } else {
-          alert("Failed to delete blog");
-        }
-      } catch (error) {
-        console.error("Error deleting blog:", error);
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setBlogToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!blogToDelete) return;
+
+    try {
+      const response = await fetch(`/api/blogs/${blogToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        alert("Blog deleted successfully!");
+        fetchBlogs(); // Refresh the list
+        closeDeleteModal();
+      } else {
         alert("Failed to delete blog");
       }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      alert("Failed to delete blog");
     }
   };
 
@@ -189,7 +202,7 @@ export default function AllBlogsPage() {
                           <Edit size={18} />
                         </Link>
                         <button
-                          onClick={() => handleDelete(blog.id)}
+                          onClick={() => openDeleteModal(blog)}
                           className="p-2 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all duration-200"
                           title="Delete"
                         >
@@ -227,6 +240,76 @@ export default function AllBlogsPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && blogToDelete && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center z-50 p-4 transition-all duration-300 ease-in-out"
+          style={{ 
+            animation: "fadeIn 0.3s ease-in-out",
+            backgroundColor: "rgba(0, 0, 0, 0.15)"
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-2xl max-w-md w-full transform transition-all duration-300 ease-in-out"
+            style={{ animation: "slideUp 0.3s ease-in-out" }}
+          >
+            {/* Modal Header */}
+            <div className="bg-red-600 text-white p-6 rounded-t-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                  <AlertTriangle className="text-red-600" size={28} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">Delete Blog Post</h3>
+                  <p className="text-red-100 text-sm">This action cannot be undone</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <p className="text-gray-700 mb-4">
+                Are you sure you want to delete this blog post?
+              </p>
+              <div className="bg-gray-50 border-l-4 border-red-500 p-4 rounded">
+                <p className="font-semibold text-gray-900 mb-1">Blog Title:</p>
+                <p className="text-gray-700 break-words">{blogToDelete.title}</p>
+                {blogToDelete.status === "published" && (
+                  <p className="text-sm text-red-600 mt-2 font-semibold">
+                    ⚠️ This is a published blog post
+                  </p>
+                )}
+              </div>
+              <div className="mt-4 bg-yellow-50 border border-yellow-200 p-4 rounded">
+                <p className="text-sm text-yellow-800 flex items-start gap-2">
+                  <AlertTriangle className="flex-shrink-0 mt-0.5" size={16} />
+                  <span>
+                    <strong>Warning:</strong> This blog post will be permanently deleted from the database. 
+                    This action cannot be reversed.
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 px-6 py-4 rounded-b-lg flex gap-3">
+              <button
+                onClick={closeDeleteModal}
+                className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-all duration-200 font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
+              >
+                Delete Permanently
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

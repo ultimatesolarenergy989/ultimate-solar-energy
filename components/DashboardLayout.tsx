@@ -36,9 +36,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setIsLoading(false);
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    router.push("/sign-in");
+  const handleLogout = async () => {
+    try {
+      // Call logout API to clear cookie
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      // Clear localStorage
+      localStorage.removeItem("user");
+
+      // Redirect to sign-in
+      router.push("/sign-in");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Still redirect even if API fails
+      localStorage.removeItem("user");
+      router.push("/sign-in");
+    }
   };
 
   const menuItems = [
@@ -63,6 +78,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       icon: User,
     },
   ];
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#002866] mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -167,12 +194,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       )}
 
       {/* Main Content */}
-      <div className="lg:ml-64 min-h-screen overflow-y-auto">
+      <div className="lg:ml-64 h-screen overflow-y-auto">
         {/* Top spacing for mobile */}
         <div className="h-16 lg:hidden" />
 
         {/* Content Area */}
-        <main className="p-4 sm:p-6 lg:p-8 pb-20">{children}</main>
+        <main className="p-4 sm:p-6 lg:p-8 pb-20 min-h-full">{children}</main>
       </div>
     </div>
   );

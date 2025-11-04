@@ -45,13 +45,25 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
+    // Create response with user data
+    const response = NextResponse.json(
       {
         message: 'User created successfully',
         user,
       },
       { status: 201 }
     );
+
+    // Set HTTP-only cookie with user ID (token)
+    response.cookies.set('auth_token', user.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
+
+    return response;
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(

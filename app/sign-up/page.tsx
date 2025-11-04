@@ -36,13 +36,19 @@ export default function SignUpPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password, name }),
+        credentials: 'include', // Important for cookies
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        alert('Account created successfully! Please sign in.');
-        router.push("/sign-in");
+        // Store user data in localStorage for client-side use
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        alert('Account created successfully!');
+        
+        // Redirect directly to dashboard
+        router.push("/dashboard");
       } else {
         alert(data.error || 'Registration failed');
         setIsLoading(false);

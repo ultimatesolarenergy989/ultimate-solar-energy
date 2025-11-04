@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function SignInPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -22,16 +23,20 @@ export default function SignInPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Important for cookies
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Store user data in localStorage (or use a better session management)
+        // Store user data in localStorage for client-side use
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        // Redirect to dashboard after successful login
-        router.push("/dashboard");
+        // Get redirect parameter or default to dashboard
+        const redirect = searchParams.get('redirect') || '/dashboard';
+        
+        // Redirect after successful login
+        router.push(redirect);
       } else {
         alert(data.error || 'Login failed');
         setIsLoading(false);
