@@ -6,18 +6,17 @@ import { Plus } from "lucide-react";
 
 type City = {
   name: string;
-  sunHours: number; // Average sun hours per day
-  electricityRate: number; // cents per kWh
+  sunHours: number;        // Average sun hours per day
+  electricityRate: number; // cents per kWh (retail)
 };
 
 const cities: City[] = [
-  { name: "Sydney", sunHours: 5.5, electricityRate: 28 },
   { name: "Melbourne", sunHours: 4.8, electricityRate: 26 },
+  { name: "Sydney", sunHours: 5.5, electricityRate: 28 },
   { name: "Brisbane", sunHours: 5.8, electricityRate: 27 },
   { name: "Perth", sunHours: 6.2, electricityRate: 29 },
   { name: "Adelaide", sunHours: 5.6, electricityRate: 30 },
   { name: "Canberra", sunHours: 5.3, electricityRate: 25 },
-  { name: "Hobart", sunHours: 4.5, electricityRate: 24 },
   { name: "Darwin", sunHours: 6.5, electricityRate: 27 },
 ];
 
@@ -27,49 +26,81 @@ type HouseholdSize = {
 };
 
 const householdSizes: HouseholdSize[] = [
-  { label: "1 Person", dailyUsage: 8 },
-  { label: "2 People", dailyUsage: 12 },
-  { label: "3 People", dailyUsage: 16 },
-  { label: "4 People", dailyUsage: 20 },
-  { label: "5+ People", dailyUsage: 25 },
+  { label: "1 Person", dailyUsage: 10 },
+  { label: "2 People", dailyUsage: 14 },
+  { label: "3 People", dailyUsage: 18 },
+  { label: "4 People", dailyUsage: 22 },
+  { label: "5 People", dailyUsage: 26 },
+  { label: "6 People", dailyUsage: 30 },
 ];
 
 type EnergyUsage = {
   label: string;
-  solarOffset: number; // percentage of energy that can be offset by solar
+  solarOffset: number; // share of usage during solar hours (0–1)
 };
 
 const energyUsagePatterns: EnergyUsage[] = [
-  { label: "Morning and Night", solarOffset: 0.5 },
-  { label: "During the Day", solarOffset: 0.8 },
-  { label: "All Day", solarOffset: 0.65 },
+  // Uses more at non-solar times → lower offset
+  { label: "Morning and Night", solarOffset: 0.6 },
+  // Good for solar
+  { label: "All Day", solarOffset: 0.8 },
 ];
+
+// Recommended system size by household (you can tune these)
+const recommendedSystemByHousehold: Record<string, number> = {
+  "1 Person": 3.5,
+  "2 People": 4.0,
+  "3 People": 5.0,
+  "4 People": 5.8,
+  "5 People": 6.3,
+  "6 People": 7.0,
+};
+
+// Feed-in tariff from your disclaimer (c/kWh)
+const FEED_IN_TARIFF = 11.3; // cents
+// Overall system efficiency (losses, orientation, etc.)
+const SYSTEM_EFFICIENCY = 0.7434308462;
 
 export default function Calculator() {
   const [selectedCity, setSelectedCity] = useState("Melbourne");
   const [selectedHousehold, setSelectedHousehold] = useState("1 Person");
-  const [selectedEnergyUsage, setSelectedEnergyUsage] = useState("Morning and Night");
+  const [selectedEnergyUsage, setSelectedEnergyUsage] = useState(
+    "Morning and Night"
+  );
   const [showResults, setShowResults] = useState(true);
 
   const calculateSavings = () => {
-    const city = cities.find((c) => c.name === selectedCity) || cities[1];
-    const household = householdSizes.find((h) => h.label === selectedHousehold) || householdSizes[0];
-    const energyPattern = energyUsagePatterns.find((e) => e.label === selectedEnergyUsage) || energyUsagePatterns[0];
+    const city =
+      cities.find((c) => c.name === selectedCity) || cities[0];
 
-    // Calculate recommended system size (kW)
-    const recommendedSystemSize = Math.ceil((household.dailyUsage / city.sunHours) * 10) / 10;
+    const household =
+      householdSizes.find((h) => h.label === selectedHousehold) ||
+      householdSizes[0];
 
-    // Calculate daily solar generation (kWh)
-    const dailySolarGeneration = recommendedSystemSize * city.sunHours * 0.75; // 0.75 efficiency factor
+    const energyPattern =
+      energyUsagePatterns.find((e) => e.label === selectedEnergyUsage) ||
+      energyUsagePatterns[0];
 
-    // Calculate daily savings
-    const dailyUsageOffset = household.dailyUsage * energyPattern.solarOffset;
-    const actualDailySavings = Math.min(dailySolarGeneration, dailyUsageOffset);
-    const dailySavingsAmount = actualDailySavings * (city.electricityRate / 100);
+    // 1) Recommended system size (kW)
+    const baseRecommended =
+      recommendedSystemByHousehold[household.label] ?? 3.5;
+    const recommendedSystemSize = baseRecommended; // no extra city factor
 
-    // Calculate monthly and annual savings
-    const monthlySavings = dailySavingsAmount * 30;
+    // 2) Daily solar generation (kWh/day)
+    const dailySolarGeneration =
+      recommendedSystemSize * city.sunHours * SYSTEM_EFFICIENCY;
+
+    // 3) Portion of that solar actually used in the home
+    const selfConsumedKWh =
+      dailySolarGeneration * energyPattern.solarOffset;
+
+    // 4) Savings: self-consumed kWh × retail rate
+    const dailySavingsAmount =
+      selfConsumedKWh * (city.electricityRate / 100);
+
+    // 5) Annual and monthly (note: monthly = annual / 12, like disclaimer)
     const annualSavings = dailySavingsAmount * 365;
+    const monthlySavings = annualSavings / 12;
 
     return {
       monthlySavings: monthlySavings.toFixed(2),
@@ -78,22 +109,31 @@ export default function Calculator() {
     };
   };
 
+
   const handleCalculate = () => {
     setShowResults(true);
   };
 
-  const results = showResults ? calculateSavings() : { monthlySavings: "59.26", annualSavings: "711.16", recommendedSystem: "3.5" };
+  const results = showResults
+    ? calculateSavings()
+    : {
+        monthlySavings: "59.26",
+        annualSavings: "711.16",
+        recommendedSystem: "3.5",
+      };
 
   return (
-    <section className="py-16 bg-[#FFD700] relative overflow-hidden" style={{
-      backgroundImage: 'url(/img/bg/calc-bg.jpg)',
-      
-    }}>
+    <section
+      className="py-16 bg-[#FFD700] relative overflow-hidden"
+      style={{
+        backgroundImage: "url(/img/bg/calc-bg.jpg)",
+      }}
+    >
       {/* Background Image */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(/img/bg/calc-bg.jpg)',
+          backgroundImage: "url(/img/bg/calc-bg.jpg)",
           opacity: 0.15,
         }}
       ></div>
@@ -106,7 +146,8 @@ export default function Calculator() {
               HOW MUCH DO SOLAR PANELS COST AUSTRALIA? CALCULATE YOUR SAVINGS!
             </h2>
             <p className="text-base lg:text-lg text-[#002866]">
-              Use the form below to see how much you could save by moving to solar power.
+              Use the form below to see how much you could save by moving
+              to solar power.
             </p>
           </div>
           <div className="flex justify-end flex-shrink-0">
@@ -126,7 +167,10 @@ export default function Calculator() {
           <div className="space-y-4">
             {/* City Selection */}
             <div>
-              <label htmlFor="city" className="block text-sm font-bold text-[#002866] mb-2 uppercase">
+              <label
+                htmlFor="city"
+                className="block text-sm font-bold text-[#002866] mb-2 uppercase"
+              >
                 My Nearest City Is
               </label>
               <select
@@ -148,7 +192,10 @@ export default function Calculator() {
 
             {/* Household Size */}
             <div>
-              <label htmlFor="household" className="block text-sm font-bold text-[#002866] mb-2 uppercase">
+              <label
+                htmlFor="household"
+                className="block text-sm font-bold text-[#002866] mb-2 uppercase"
+              >
                 My Household Has
               </label>
               <select
@@ -170,7 +217,10 @@ export default function Calculator() {
 
             {/* Energy Usage Pattern */}
             <div>
-              <label htmlFor="energy" className="block text-sm font-bold text-[#002866] mb-2 uppercase">
+              <label
+                htmlFor="energy"
+                className="block text-sm font-bold text-[#002866] mb-2 uppercase"
+              >
                 I Use My Most Of My Energy
               </label>
               <select
@@ -207,60 +257,72 @@ export default function Calculator() {
 
           {/* Right Side - Results Panel */}
           <div className="bg-[#002866] rounded-lg overflow-hidden shadow-2xl w-full">
-              {/* Results Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-0 p-8 pb-6">
-                {/* Monthly Savings */}
-                <div className="text-center px-2 py-4 lg:py-0">
-                  <h3 className="text-white font-bold text-sm lg:text-base mb-4 leading-tight uppercase">
-                    EST. MONTHLY<br />SAVINGS
-                  </h3>
-                  <p className="text-[#FFD700] font-bold text-4xl">
-                    ${results.monthlySavings}
-                  </p>
-                </div>
-
-                {/* Annual Savings */}
-                <div className="text-center px-2 py-4 lg:py-0">
-                  <h3 className="text-white font-bold text-sm lg:text-base mb-4 leading-tight uppercase">
-                    EST. ANNUAL<br />SAVINGS
-                  </h3>
-                  <p className="text-[#FFD700] font-bold text-4xl">
-                    ${results.annualSavings}
-                  </p>
-                </div>
-
-                {/* Recommended System */}
-                <div className="text-center px-2 py-4 lg:py-0">
-                  <h3 className="text-white font-bold text-sm lg:text-base mb-4 leading-tight uppercase">
-                    RECOMMENDED<br />SYSTEM
-                  </h3>
-                  <p className="text-[#FFD700] font-bold text-4xl">
-                    {results.recommendedSystem}KW
-                  </p>
-                </div>
+            {/* Results Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-0 p-8 pb-6">
+              {/* Monthly Savings */}
+              <div className="text-center px-2 py-4 lg:py-0">
+                <h3 className="text-white font-bold text-sm lg:text-base mb-4 leading-tight uppercase">
+                  EST. MONTHLY
+                  <br />
+                  SAVINGS
+                </h3>
+                <p className="text-[#FFD700] font-bold text-4xl">
+                  ${results.monthlySavings}
+                </p>
               </div>
 
-              {/* Get Quote Button */}
-              <div className="px-8 pb-6">
-                <Link
-                  href="/quote"
-                  className="block w-full bg-[#FFD700] text-[#002866] font-bold py-4 px-6 rounded-md transition-all duration-300 text-center uppercase tracking-wider shadow-lg hover:shadow-xl text-base relative overflow-hidden group hover:scale-105"
-                >
-                  <span className="relative z-10 group-hover:scale-105 transition-transform duration-300 inline-block">Get Your Quote</span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
-                </Link>
+              {/* Annual Savings */}
+              <div className="text-center px-2 py-4 lg:py-0">
+                <h3 className="text-white font-bold text-sm lg:text-base mb-4 leading-tight uppercase">
+                  EST. ANNUAL
+                  <br />
+                  SAVINGS
+                </h3>
+                <p className="text-[#FFD700] font-bold text-4xl">
+                  ${results.annualSavings}
+                </p>
               </div>
 
-              {/* Disclaimer */}
-              <div className="px-8 pb-8">
-                <p className="text-white text-xs leading-relaxed">
-                  <span className="font-semibold">Assumptions:</span> Savings calculation based on a detached house, minimum feed-in tariff of 11.3 c/kwh. Based on an average household load profile (Bureau of Statistics). Monthly saving is simplified to annual saving / 12. Actual payback may vary on exact location, system conversion efficiency and other factors.
+              {/* Recommended System */}
+              <div className="text-center px-2 py-4 lg:py-0">
+                <h3 className="text-white font-bold text-sm lg:text-base mb-4 leading-tight uppercase">
+                  RECOMMENDED
+                  <br />
+                  SYSTEM
+                </h3>
+                <p className="text-[#FFD700] font-bold text-4xl">
+                  {results.recommendedSystem}KW
                 </p>
               </div>
             </div>
+
+            {/* Get Quote Button */}
+            <div className="px-8 pb-6">
+              <Link
+                href="/quote"
+                className="block w-full bg-[#FFD700] text-[#002866] font-bold py-4 px-6 rounded-md transition-all duration-300 text-center uppercase tracking-wider shadow-lg hover:shadow-xl text-base relative overflow-hidden group hover:scale-105"
+              >
+                <span className="relative z-10 group-hover:scale-105 transition-transform duration-300 inline-block">
+                  Get Your Quote
+                </span>
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
+              </Link>
+            </div>
+
+            {/* Disclaimer */}
+            <div className="px-8 pb-8">
+              <p className="text-white text-xs leading-relaxed">
+                <span className="font-semibold">Assumptions:</span> Savings
+                calculation based on a detached house, minimum feed-in
+                tariff of 11.3 c/kwh. Based on an average household load
+                profile (Bureau of Statistics). Monthly saving is simplified
+                to annual saving / 12. Actual payback may vary on exact
+                location, system conversion efficiency and other factors.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
-

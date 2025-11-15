@@ -105,3 +105,26 @@ model Quotation {
   @@index([status])
   @@index([createdAt])
 }
+
+// Review Model for Google Reviews
+model Review {
+  id              String   @id @default(uuid())
+  googleReviewId  String?  @unique
+  authorName      String
+  authorPhoto     String?
+  rating          Int      // 1-5
+  reviewText      String?  @db.Text
+  publishedAt     DateTime
+  source          String   @default("google") // google, manual
+  isFeatured      Boolean  @default(false)
+  isVisible       Boolean  @default(true)
+  businessReply   String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("reviews")
+  @@index([rating])
+  @@index([publishedAt])
+  @@index([isFeatured])
+  @@index([isVisible])
+}
