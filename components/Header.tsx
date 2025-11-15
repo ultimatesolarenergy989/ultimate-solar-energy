@@ -107,7 +107,7 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/reviews"
+              href="/review"
               className="text-white hover:text-[#FFD700] transition-all duration-200 font-semibold uppercase text-[11px] xl:text-xs tracking-wide px-2 xl:px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap"
             >
               Reviews
@@ -311,7 +311,7 @@ export default function Header() {
           </Link>
 
           <Link
-            href="/reviews"
+            href="/review"
             onClick={() => setMobileOpen(false)}
             className="block text-white hover:text-[#FFD700] hover:bg-white/5 font-semibold uppercase text-base py-3 px-4 rounded-lg transition-all duration-200 border-b border-white/10"
           >
