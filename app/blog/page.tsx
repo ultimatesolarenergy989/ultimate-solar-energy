@@ -2,6 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 
+// Force dynamic rendering and cache for 60 seconds
+export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Revalidate every 60 seconds
+
 async function getPublishedBlogs() {
   try {
     const blogs = await prisma.blog.findMany({
@@ -19,9 +23,11 @@ async function getPublishedBlogs() {
         publishedAt: "desc",
       },
     });
+    
+    console.log(`✅ Fetched ${blogs.length} published blogs`);
     return blogs;
   } catch (error) {
-    console.error("Error fetching blogs:", error);
+    console.error("❌ Error fetching blogs:", error);
     return [];
   }
 }

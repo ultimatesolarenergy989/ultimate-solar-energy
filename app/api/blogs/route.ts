@@ -6,8 +6,17 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
+    const publicOnly = searchParams.get("public") === "true";
 
-    const where = status && status !== "all" ? { status } : {};
+    let where: any = {};
+    
+    if (publicOnly) {
+      // For public blog page - only published blogs
+      where = { status: "published" };
+    } else if (status && status !== "all") {
+      // For admin dashboard - filter by status
+      where = { status };
+    }
 
     const blogs = await prisma.blog.findMany({
       where,
@@ -21,13 +30,15 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: {
-        createdAt: "desc",
+        publishedAt: "desc",
       },
     });
 
+    console.log(`✅ API fetched ${blogs.length} blogs (status: ${status || 'all'}, public: ${publicOnly})`);
+
     return NextResponse.json(blogs);
   } catch (error) {
-    console.error("Error fetching blogs:", error);
+    console.error("❌ Error fetching blogs:", error);
     return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
   }
 }

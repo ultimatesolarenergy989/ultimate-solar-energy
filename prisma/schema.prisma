@@ -1,32 +1,28 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_URL")
-  //directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
 }
 
-// User Model for Authentication
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  password  String
-  name      String?
-  role      String    @default("user") // user, admin, etc.
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  blogs     Blog[]
-  sessions  Session[]
+  id               String    @id @default(uuid())
+  email            String    @unique
+  password         String
+  name             String?
+  role             String    @default("user")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+  blogs            Blog[]
+  sessions         Session[]
 
   @@map("users")
 }
 
-// Session Model for secure session management
 model Session {
   id        String   @id @default(uuid())
   userId    String
@@ -36,36 +32,37 @@ model Session {
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("sessions")
   @@index([userId])
   @@index([token])
+  @@map("sessions")
 }
 
-// Blog Model
 model Blog {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   title           String
-  slug            String   @unique
-  content         String   @db.Text
-  excerpt         String?  @db.Text
+  slug            String    @unique
+  content         String
+  excerpt         String?
   featuredImage   String?
-  tags            String[] // Array of tags
+  tags            String[]
   metaDescription String?
-  status          String   @default("draft") // draft, published
+  status          String    @default("draft")
   publishedAt     DateTime?
-  views           Int      @default(0)
-  author          User     @relation(fields: [authorId], references: [id])
+  views           Int       @default(0)
   authorId        String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  author          User      @relation(fields: [authorId], references: [id])
 
+  @@index([status])
+  @@index([publishedAt])
+  @@index([authorId])
+  @@index([createdAt])
   @@map("blogs")
 }
 
-// Contact Model
 model Contact {
   id        String   @id @default(uuid())
   firstName String
@@ -74,57 +71,55 @@ model Contact {
   email     String
   state     String
   postCode  String
-  message   String   @db.Text
-  status    String   @default("new") // new, contacted, completed
+  message   String
+  status    String   @default("new")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
   @@map("contacts")
-  @@index([email])
-  @@index([status])
-  @@index([createdAt])
 }
 
-// Quotation Model
 model Quotation {
-  id          String   @id @default(uuid())
-  firstName   String
-  lastName    String
-  phone       String
-  email       String
-  state       String?
-  postCode    String
-  lookingFor  String   // What they're looking for (solar-panels, battery, etc.)
-  categories  String[] // Array of categories (residence, business)
-  status      String   @default("new") // new, contacted, completed
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  phone      String
+  email      String
+  state      String?
+  postCode   String
+  lookingFor String
+  categories String[]
+  status     String   @default("new")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  @@map("quotations")
   @@index([email])
   @@index([status])
   @@index([createdAt])
+  @@map("quotations")
 }
 
-// Review Model for Google Reviews
 model Review {
-  id              String   @id @default(uuid())
-  googleReviewId  String?  @unique
-  authorName      String
-  authorPhoto     String?
-  rating          Int      // 1-5
-  reviewText      String?  @db.Text
-  publishedAt     DateTime
-  source          String   @default("google") // google, manual
-  isFeatured      Boolean  @default(false)
-  isVisible       Boolean  @default(true)
-  businessReply   String?  @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(uuid())
+  googleReviewId String?  @unique
+  authorName     String
+  authorPhoto    String?
+  rating         Int
+  reviewText     String?
+  publishedAt    DateTime
+  source         String   @default("google")
+  isFeatured     Boolean  @default(false)
+  isVisible      Boolean  @default(true)
+  businessReply  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  @@map("reviews")
   @@index([rating])
   @@index([publishedAt])
   @@index([isFeatured])
   @@index([isVisible])
+  @@map("reviews")
 }
