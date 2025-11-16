@@ -12,7 +12,7 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   return (
     <>
       {!isDashboardPage && <Header />}
-      <main className="min-h-screen">{children}</main>
+      <main className="">{children}</main>
       {!isDashboardPage && <Footer />}
     </>
   );

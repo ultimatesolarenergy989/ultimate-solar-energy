@@ -22,8 +22,8 @@ const residentialPlans: Plan[] = [
     outputRange: "9,100 to 10,400*",
     suitableFor: "Suitable for:",
     peopleCount: "upto 3 people",
-    quoteLink: "/quote",
-    learnMoreLink: "/products/residential/6.6kw",
+    quoteLink: "/get-a-quote",
+    learnMoreLink: "/products/6-6-kw-platinum-system",
   },
   {
     title: "10 KW SYSTEM",
@@ -32,8 +32,8 @@ const residentialPlans: Plan[] = [
     outputRange: "14,900 to 15,330*",
     suitableFor: "Suitable for:",
     peopleCount: "1-6 people",
-    quoteLink: "/quote",
-    learnMoreLink: "/products/residential/10kw",
+    quoteLink: "/get-a-quote",
+    learnMoreLink: "/products/10-kw-ultimate-system",
   },
   {
     title: "13.3 KW SYSTEM",
@@ -42,8 +42,8 @@ const residentialPlans: Plan[] = [
     outputRange: "15,800 to 18,250*",
     suitableFor: "Suitable for:",
     peopleCount: "1-10 People",
-    quoteLink: "/quote",
-    learnMoreLink: "/products/residential/13.3kw",
+    quoteLink: "/get-a-quote",
+    learnMoreLink: "/products/13-3kw-platinum-system",
   },
 ];
 
@@ -55,8 +55,8 @@ const commercialPlans: Plan[] = [
     outputRange: "80 to 90",
     suitableFor: "Suitable for Businesses with small to medium energy usage, who receive Energy bills of about $9000 annually.",
     peopleCount: "",
-    quoteLink: "/quote",
-    learnMoreLink: "/products/commercial/20kw",
+    quoteLink: "/get-a-quote",
+    learnMoreLink: "/products/20-kw-system",
   },
   {
     title: "40 KW SYSTEM",
@@ -65,8 +65,8 @@ const commercialPlans: Plan[] = [
     outputRange: "160 to 190",
     suitableFor: "Suitable for Businesses with a medium energy usage, who receive Energy bills of about $18000 annually.",
     peopleCount: "",
-    quoteLink: "/quote",
-    learnMoreLink: "/products/commercial/40kw",
+    quoteLink: "/get-a-quote",
+    learnMoreLink: "/products/40-kw-system",
   },
   {
     title: "100 KW SYSTEM",
@@ -75,8 +75,8 @@ const commercialPlans: Plan[] = [
     outputRange: "400 to 470",
     suitableFor: "Suitable for Businesses with a high energy usage, who receive Energy bills of about $48000 annually.",
     peopleCount: "",
-    quoteLink: "/quote",
-    learnMoreLink: "/products/commercial/100kw",
+    quoteLink: "/get-a-quote",
+    learnMoreLink: "/products/100-kw-system",
   },
 ];
 

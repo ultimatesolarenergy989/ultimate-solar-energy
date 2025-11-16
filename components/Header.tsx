@@ -7,7 +7,7 @@ import { Phone, ChevronDown, X, Menu } from "lucide-react";
 const productCategories = [
   {
     label: "RESIDENTIAL",
-    href: "/products/residential",
+    href: "/residential-solar",
       submenu: [
         { href: "/products/6-6-kw-platinum-system", label: "6.6 KW PLATINUM SYSTEM" },
         { href: "/products/6-6-kw-boost-system", label: "6.6 KW BOOST SYSTEM" },
@@ -195,7 +195,7 @@ export default function Header() {
             </div>
 
             <Link
-              href="commercial-solars"
+              href="/commercial-solars"
               className="text-white hover:text-[#FFD700] transition-all duration-200 font-semibold uppercase text-[11px] xl:text-xs tracking-wide px-2 xl:px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap"
             >
               Commercial

@@ -8,42 +8,42 @@ const features = [
     title: "CERTIFIED INSTALLATIONS",
     description:
       "Solar power systems require specialized solar designers and electricians who ensure that all the system will be install",
-    link: "/certified-installations",
+    link: "/why-ultimate-solar-energy/certified-installations",
   },
   {
     icon: LifeBuoy,
     title: "CUSTOMER SUPPORT",
     description:
       "Solar energy is easy to understand. But we make it easier for you! We guide you through the system and show you how it",
-    link: "/customer-support",
+    link: "/why-ultimate-solar-energy/customer-support",
   },
   {
     icon: Users,
     title: "ECO- FRIENDLY",
     description:
       "Instead of backing up your house with a fossil fuel generator and adding a carbon footprint in your record, choose a gr",
-    link: "/eco-friendly",
+    link: "/why-ultimate-solar-energy/eco-friendly",
   },
   {
     icon: DollarSign,
     title: "SAVINGS!",
     description:
       "For better or worse, Australia is one of the countries with the highest electricity rates around the world. Fortunately",
-    link: "/savings",
+    link: "/why-ultimate-solar-energy/savings",
   },
   {
     icon: Shield,
     title: "SYSTEM WARRANTY",
     description:
       "Nothing is more important for USE than to make sure you get what you asked for! With our system warranty you can rest a",
-    link: "/system-warranty",
+    link: "/why-ultimate-solar-energy/system-warranty",
   },
   {
     icon: ThumbsUp,
     title: "TOP QUALITY PRODUCTS",
     description:
       "USE's quality assurance team source and recommend one of the most recognized brands in the industry.",
-    link: "/top-quality-products",
+    link: "/why-ultimate-solar-energy/top-quality-products",
   },
 ];
 
