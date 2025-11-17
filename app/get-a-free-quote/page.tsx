@@ -69,26 +69,26 @@ export default function GetAFreeQuotePage() {
   const [showThankYou, setShowThankYou] = useState(false);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
-  // Load Google Maps script (disabled - using manual input)
-  // useEffect(() => {
-  //   const script = document.createElement('script');
-  //   script.src = `https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyA0D-8_XYsWWrI9or4xUFHCT2hORHPPzlE'}`;
-  //   script.async = true;
-  //   script.defer = true;
-  //   document.head.appendChild(script);
+  // Load Google Maps script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
 
-  //   script.onload = () => {
-  //     if (addressInputRef.current && window.google) {
-  //       initAutocomplete();
-  //     }
-  //   };
+    script.onload = () => {
+      if (addressInputRef.current && window.google) {
+        initAutocomplete();
+      }
+    };
 
-  //   return () => {
-  //     if (document.head.contains(script)) {
-  //       document.head.removeChild(script);
-  //     }
-  //   };
-  // }, [step]);
+    return () => {
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, [step]);
 
   const initAutocomplete = () => {
     if (!addressInputRef.current || !window.google) return;
@@ -194,8 +194,7 @@ export default function GetAFreeQuotePage() {
   };
 
   const setAddress = () => {
-    // Simplified validation - just check if address is filled
-    if (formData.address && formData.address.trim().length > 5) {
+    if (formData.address && !addressError && formData.latitude && formData.longitude && !streetError) {
       changeStep(7);
     }
   };
@@ -521,22 +520,36 @@ export default function GetAFreeQuotePage() {
                       ref={addressInputRef}
                       type="text"
                       className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#002B5B] focus:outline-none text-lg"
-                      placeholder="Enter your full address (e.g., 123 Smith Street, Melbourne VIC 3000)"
+                      placeholder="Address and street number"
                       value={formData.address}
                       onChange={(e) => {
                         setFormData({ ...formData, address: e.target.value });
+                        setSelectedAddress(false);
                       }}
                     />
                   </div>
-                  {formData.address && formData.address.length < 10 && (
+                  {formData.address && !selectedAddress && !addressError && (
+                    <p className="text-sm text-orange-600 mb-4">
+                      Please select an address from the suggestion list. If you cannot see your address please remove "unit", "suite",
+                      "factory", "shed", "villa" etc from your input leaving only numbers in front of the street name.
+                    </p>
+                  )}
+                  {selectedAddress && streetError && (
+                    <p className="text-sm text-orange-600 mb-4">
+                      Please enter a complete street address. If you cannot see your address please remove "unit", "suite", "factory",
+                      "shed", "villa" etc from your input leaving only numbers in front of the street name.
+                    </p>
+                  )}
+                  {selectedAddress && !formData.street_number && !streetError && (
                     <p className="text-sm text-gray-600 mb-4">
-                      <strong>Tip:</strong> Please enter your complete street address including suburb and postcode for an accurate quote.
+                      <strong>Tip:</strong> Including a street number in your address will help the installers provide a more accurate
+                      quote.
                     </p>
                   )}
                   <div className="text-right">
                     <button
                       onClick={setAddress}
-                      disabled={!formData.address || formData.address.trim().length < 5}
+                      disabled={!validAddress || !formData.latitude || !formData.longitude || streetError}
                       className="bg-[#002866] text-white font-bold hover:bg-[#FFD700] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 py-3 px-8 ml-auto"
                     >
                       Continue
@@ -623,7 +636,7 @@ export default function GetAFreeQuotePage() {
                     <button
                       onClick={submitForm}
                       disabled={isSubmitting}
-                      className="btn-primary py-3 px-8 text-lg font-semibold disabled:opacity-50"
+                      className="bg-[#002866] text-white font-bold hover:bg-[#FFD700] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 py-3 px-8 ml-auto"
                     >
                       {isSubmitting ? 'Please wait...' : 'Get Results'}
                     </button>
@@ -783,7 +796,7 @@ export default function GetAFreeQuotePage() {
                     <button
                       onClick={submitForm}
                       disabled={isSubmitting}
-                      className="btn-primary py-3 px-8 text-lg font-semibold disabled:opacity-50"
+                      className="bg-[#002866] text-white font-bold hover:bg-[#FFD700] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 py-3 px-8 ml-auto"
                     >
                       {isSubmitting ? 'Please wait...' : 'Get Results'}
                     </button>
