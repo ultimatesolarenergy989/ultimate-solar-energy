@@ -6,8 +6,8 @@ import { Plus } from "lucide-react";
 
 type City = {
   name: string;
-  sunHours: number;        // Average sun hours per day
-  electricityRate: number; // cents per kWh (retail)
+  sunHours: number;        // still here if you want later, but not used in formula
+  electricityRate: number; // still here if you want later, but not used in formula
 };
 
 const cities: City[] = [
@@ -22,7 +22,7 @@ const cities: City[] = [
 
 type HouseholdSize = {
   label: string;
-  dailyUsage: number; // kWh per day
+  dailyUsage: number; // currently unused by the formula, kept for future if needed
 };
 
 const householdSizes: HouseholdSize[] = [
@@ -36,17 +36,14 @@ const householdSizes: HouseholdSize[] = [
 
 type EnergyUsage = {
   label: string;
-  solarOffset: number; // share of usage during solar hours (0–1)
 };
 
 const energyUsagePatterns: EnergyUsage[] = [
-  // Uses more at non-solar times → lower offset
-  { label: "Morning and Night", solarOffset: 0.6 },
-  // Good for solar
-  { label: "All Day", solarOffset: 0.8 },
+  { label: "Morning and Night" },
+  { label: "All Day" },
 ];
 
-// Recommended system size by household (you can tune these)
+// Recommended system size by household (kW)
 const recommendedSystemByHousehold: Record<string, number> = {
   "1 Person": 3.5,
   "2 People": 4.0,
@@ -56,10 +53,31 @@ const recommendedSystemByHousehold: Record<string, number> = {
   "6 People": 7.0,
 };
 
-// Feed-in tariff from your disclaimer (c/kWh)
-const FEED_IN_TARIFF = 11.3; // cents
-// Overall system efficiency (losses, orientation, etc.)
-const SYSTEM_EFFICIENCY = 0.7434308462;
+/**
+ * Per-city calibration constants, reverse-engineered from the
+ * WordPress calculator for:
+ * - 1 Person
+ * - 3.5 kW system
+ * - Morning & Night vs All Day
+ *
+ * baseRate     = $ per kW per month for "Morning and Night"
+ * allDayFactor = multiplier when "All Day" is selected
+ */
+const CITY_CONFIG: Record<
+  string,
+  {
+    baseRate: number;    // $/kW/month (Morning & Night)
+    allDayFactor: number; // multiplier for All Day
+  }
+> = {
+  Melbourne: { baseRate: 16.93, allDayFactor: 1.27 }, // 59.26 → 75.33
+  Sydney:    { baseRate: 18.41, allDayFactor: 1.00 }, // 64.42 → 64.42
+  Brisbane:  { baseRate: 20.91, allDayFactor: 1.27 }, // 73.18 → 92.94
+  Perth:     { baseRate: 21.64, allDayFactor: 1.27 }, // 75.75 → 96.21
+  Adelaide:  { baseRate: 19.62, allDayFactor: 1.27 }, // 68.67 → 87.21
+  Canberra:  { baseRate: 19.36, allDayFactor: 1.27 }, // 67.77 → 86.06
+  Darwin:    { baseRate: 30.39, allDayFactor: 1.00 }, // 106.35 → 106.35
+};
 
 export default function Calculator() {
   const [selectedCity, setSelectedCity] = useState("Melbourne");
@@ -70,45 +88,37 @@ export default function Calculator() {
   const [showResults, setShowResults] = useState(true);
 
   const calculateSavings = () => {
-    const city =
-      cities.find((c) => c.name === selectedCity) || cities[0];
+    const city = cities.find((c) => c.name === selectedCity) || cities[0];
 
     const household =
       householdSizes.find((h) => h.label === selectedHousehold) ||
       householdSizes[0];
 
-    const energyPattern =
-      energyUsagePatterns.find((e) => e.label === selectedEnergyUsage) ||
-      energyUsagePatterns[0];
-
-    // 1) Recommended system size (kW)
-    const baseRecommended =
+    // Recommended system size for that household
+    const systemSize =
       recommendedSystemByHousehold[household.label] ?? 3.5;
-    const recommendedSystemSize = baseRecommended; // no extra city factor
 
-    // 2) Daily solar generation (kWh/day)
-    const dailySolarGeneration =
-      recommendedSystemSize * city.sunHours * SYSTEM_EFFICIENCY;
+    // City-specific calibration
+    const config = CITY_CONFIG[city.name] || CITY_CONFIG["Melbourne"];
 
-    // 3) Portion of that solar actually used in the home
-    const selfConsumedKWh =
-      dailySolarGeneration * energyPattern.solarOffset;
+    // Time-of-use factor based on energy usage pattern
+    const timeFactor =
+      selectedEnergyUsage === "All Day"
+        ? config.allDayFactor
+        : 1; // "Morning and Night"
 
-    // 4) Savings: self-consumed kWh × retail rate
-    const dailySavingsAmount =
-      selfConsumedKWh * (city.electricityRate / 100);
-
-    // 5) Annual and monthly (note: monthly = annual / 12, like disclaimer)
-    const annualSavings = dailySavingsAmount * 365;
-    const monthlySavings = annualSavings / 12;
+    // === CALIBRATED FORMULA ===
+    // Monthly savings = systemSize (kW) * baseRate ($/kW/month) * timeFactor
+    // Annual savings  = monthlySavings * 12
+    const monthlySavings = systemSize * config.baseRate * timeFactor;
+    const annualSavings = monthlySavings * 12;
 
     return {
       monthlySavings: monthlySavings.toFixed(2),
       annualSavings: annualSavings.toFixed(2),
-      recommendedSystem: recommendedSystemSize.toFixed(1),
+      recommendedSystem: systemSize.toFixed(1),
     };
   };
-
 
   const handleCalculate = () => {
     setShowResults(true);
@@ -299,7 +309,7 @@ export default function Calculator() {
             {/* Get Quote Button */}
             <div className="px-8 pb-6">
               <Link
-                href="/quote"
+                href="/get-a-free-quote"
                 className="block w-full bg-[#FFD700] text-[#002866] font-bold py-4 px-6 rounded-md transition-all duration-300 text-center uppercase tracking-wider shadow-lg hover:shadow-xl text-base relative overflow-hidden group hover:scale-105"
               >
                 <span className="relative z-10 group-hover:scale-105 transition-transform duration-300 inline-block">
