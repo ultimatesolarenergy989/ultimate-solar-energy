@@ -10,8 +10,8 @@ export default function CommercialSystems() {
       output: "Output (units/day)",
       outputRange: "80 to 90",
       description: "Suitable for Businesses with small to medium energy usage, who receive Energy bills of about $9000 annually.",
-      quoteLink: "/quote",
-      learnMoreLink: "/products/commercial/20kw",
+      quoteLink: "/get-a-quote",
+      learnMoreLink: "/products/20-kw-system",
     },
     {
       id: 2,
@@ -20,8 +20,8 @@ export default function CommercialSystems() {
       output: "Output (units/day)",
       outputRange: "160 to 190",
       description: "Suitable for Businesses with a medium energy usage, who receive Energy bills of about $18000 annually.",
-      quoteLink: "/quote",
-      learnMoreLink: "/products/commercial/40kw",
+      quoteLink: "/get-a-quote",
+      learnMoreLink: "/products/40-kw-system",
     },
     {
       id: 3,
@@ -30,8 +30,8 @@ export default function CommercialSystems() {
       output: "Output (units/day)",
       outputRange: "400 to 470",
       description: "Suitable for Businesses with a high energy usage, who receive Energy bills of about $48000 annually.",
-      quoteLink: "/quote",
-      learnMoreLink: "/products/commercial/100kw",
+      quoteLink: "/get-a-quote",
+      learnMoreLink: "/products/100-kw-system",
     },
   ];
 
