@@ -1,3 +1,21 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "CEC Certified Solar Installations | Accredited Installers | Ultimate Solar Energy",
+  description: "All installations performed by CEC-accredited solar installers following Clean Energy Council guidelines. Professional, certified, and compliant solar installations across Australia.",
+  keywords: [
+    "CEC certified installation",
+    "accredited solar installer",
+    "certified solar installation",
+    "Clean Energy Council installer",
+    "professional solar installation"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function certifiedInstallationsPage() {
     return (
       <main className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 h-[500px]">

@@ -1,3 +1,21 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Top Quality Solar Products | Premium Solar Panels | Ultimate Solar Energy",
+  description: "We use only top-tier solar products from world-renowned manufacturers. Tier 1 solar panels, premium inverters, and high-quality mounting systems with industry-leading warranties.",
+  keywords: [
+    "quality solar panels",
+    "Tier 1 solar panels",
+    "premium solar products",
+    "best solar panels Australia",
+    "quality solar equipment"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function TopQualityProductsPage() {
     return (
       <main className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 h-[500px]">

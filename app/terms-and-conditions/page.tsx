@@ -1,3 +1,14 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms and Conditions | Ultimate Solar Energy",
+  description: "Read Ultimate Solar Energy's terms and conditions for solar panel installation, services, warranties, and customer agreements in Australia.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function TermsAndConditionsPage() {
   return (
     <main className="w-full bg-white py-12  pl-[10px] pr-[10px]">

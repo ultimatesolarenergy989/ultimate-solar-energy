@@ -2,6 +2,23 @@ import AirconRebateBanner from "@/components/AirconRebateBanner";
 import AcPartnersSlider from "@/components/AcPartnersSlider";
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "USE Aircon Rebate 2024 | Government Rebates | Ultimate Solar Energy",
+  description: "Learn about the USE Aircon Rebate 2024 program. Get government rebates on energy-efficient air conditioning systems when combined with solar. Save money and stay comfortable.",
+  keywords: [
+    "aircon rebate 2024",
+    "USE aircon rebate",
+    "air conditioning rebate",
+    "government aircon rebate",
+    "energy efficient aircon"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function UseAirconRebate2024Page() {
   return (

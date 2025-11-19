@@ -1,3 +1,29 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "System Warranty | Solar Panel Warranties | Ultimate Solar Energy",
+  description: "Comprehensive warranty information for Ultimate Solar Energy solar systems. 25-30 year panel warranties, 10+ year inverter warranties, and quality workmanship guarantees. CEC-approved installations.",
+  keywords: [
+    "solar warranty",
+    "solar panel warranty",
+    "inverter warranty",
+    "solar system guarantee",
+    "solar installation warranty",
+    "CEC warranty"
+  ],
+  openGraph: {
+    title: "System Warranty | Solar Panel Warranties | Ultimate Solar Energy",
+    description: "Comprehensive warranty information for Ultimate Solar Energy solar systems. 25-30 year panel warranties and quality guarantees.",
+    url: "https://ultimatesolarenergy.com.au/system-warranty",
+    siteName: "Ultimate Solar Energy",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function SystemWarrantyPage() {
   return (
     <main className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8">

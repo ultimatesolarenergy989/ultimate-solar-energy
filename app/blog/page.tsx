@@ -1,10 +1,37 @@
 import Image from "next/image";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
+import { Metadata } from "next";
 
 // Force dynamic rendering and cache for 60 seconds
 export const dynamic = 'force-dynamic';
 export const revalidate = 60; // Revalidate every 60 seconds
+
+export const metadata: Metadata = {
+  title: "Solar Energy Blog | Tips, Guides & News | Ultimate Solar Energy",
+  description: "Explore our comprehensive solar energy blog featuring expert tips, installation guides, product comparisons, industry news, and renewable energy insights for Australian homeowners and businesses.",
+  keywords: [
+    "solar energy blog",
+    "solar panel guides",
+    "solar installation tips",
+    "renewable energy news",
+    "solar panel comparison",
+    "solar energy Australia",
+    "solar power tips",
+    "green energy blog"
+  ],
+  openGraph: {
+    title: "Solar Energy Blog | Tips, Guides & News | Ultimate Solar Energy",
+    description: "Explore our comprehensive solar energy blog featuring expert tips, installation guides, product comparisons, and renewable energy insights.",
+    url: "https://ultimatesolarenergy.com.au/blog",
+    siteName: "Ultimate Solar Energy",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 async function getPublishedBlogs() {
   try {

@@ -1,4 +1,21 @@
 import Image from "next/image";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "CEC Approved Solar Retailer | Accredited Solar Company | Ultimate Solar Energy",
+  description: "Ultimate Solar Energy is a Clean Energy Council (CEC) approved solar retailer. Trust our accredited team for compliant, quality solar installations across Australia.",
+  keywords: [
+    "CEC approved retailer",
+    "Clean Energy Council approved",
+    "accredited solar company",
+    "CEC certified solar",
+    "approved solar retailer Australia"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function CECApprovedRetailerPage() {
   return (

@@ -2,10 +2,69 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
+import { Metadata } from "next";
 
 // Set dynamic rendering
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+// Generate metadata for each blog post
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const blog = await getBlogBySlug(params.slug);
+
+  if (!blog) {
+    return {
+      title: "Blog Not Found | Ultimate Solar Energy",
+      description: "The requested blog post could not be found.",
+    };
+  }
+
+  const publishedDate = blog.publishedAt
+    ? new Date(blog.publishedAt).toISOString()
+    : new Date(blog.createdAt).toISOString();
+
+  return {
+    title: `${blog.title} | Ultimate Solar Energy Blog`,
+    description: blog.metaDescription || blog.excerpt || blog.title,
+    keywords: blog.tags,
+    authors: [{ name: blog.author?.name || "Ultimate Solar Energy" }],
+    openGraph: {
+      title: blog.title,
+      description: blog.metaDescription || blog.excerpt || blog.title,
+      url: `https://ultimatesolarenergy.com.au/${blog.slug}`,
+      siteName: "Ultimate Solar Energy",
+      images: blog.featuredImage
+        ? [
+            {
+              url: blog.featuredImage,
+              width: 1200,
+              height: 630,
+              alt: blog.title,
+            },
+          ]
+        : [],
+      locale: "en_AU",
+      type: "article",
+      publishedTime: publishedDate,
+      authors: [blog.author?.name || "Ultimate Solar Energy"],
+      tags: blog.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: blog.title,
+      description: blog.metaDescription || blog.excerpt || blog.title,
+      images: blog.featuredImage ? [blog.featuredImage] : [],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 // Generate static params for published blogs
 export async function generateStaticParams() {

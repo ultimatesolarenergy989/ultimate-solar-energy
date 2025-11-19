@@ -1,5 +1,32 @@
 import { Globe, Lightbulb, CheckCircle, Heart, Star, CreditCard } from "lucide-react";
 import AboutCertifications from "@/components/AboutCertifications";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us | Our Story & Values | Ultimate Solar Energy",
+  description: "Learn about Ultimate Solar Energy - Australia's trusted solar provider. Discover our commitment to quality, sustainability, customer satisfaction, and renewable energy solutions. CEC-approved and dedicated to your energy independence.",
+  keywords: [
+    "about Ultimate Solar Energy",
+    "solar company Australia",
+    "CEC approved solar",
+    "solar energy provider",
+    "renewable energy company",
+    "sustainable energy Australia",
+    "solar installation company",
+    "trusted solar provider"
+  ],
+  openGraph: {
+    title: "About Us | Our Story & Values | Ultimate Solar Energy",
+    description: "Learn about Ultimate Solar Energy - Australia's trusted solar provider committed to quality, sustainability, and renewable energy solutions.",
+    url: "https://ultimatesolarenergy.com.au/about-us",
+    siteName: "Ultimate Solar Energy",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function AboutUsPage() {
   return (

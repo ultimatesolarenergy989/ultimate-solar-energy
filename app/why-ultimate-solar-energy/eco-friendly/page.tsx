@@ -1,3 +1,22 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Eco-Friendly Solar Solutions | Green Energy | Ultimate Solar Energy",
+  description: "Choose eco-friendly solar energy solutions. Reduce your carbon footprint, contribute to a sustainable future, and help protect the environment with clean renewable energy.",
+  keywords: [
+    "eco-friendly solar",
+    "green energy",
+    "sustainable solar",
+    "renewable energy",
+    "carbon footprint reduction",
+    "environmental solar"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function EcoFriendlyPage() {
     return (
       <main className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 h-[500px]">

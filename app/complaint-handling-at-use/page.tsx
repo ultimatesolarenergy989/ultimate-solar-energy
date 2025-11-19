@@ -1,3 +1,14 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Complaint Handling & Customer Support | Ultimate Solar Energy",
+  description: "Ultimate Solar Energy complaint handling and customer support process. We're committed to resolving issues quickly and professionally.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function ComplaintHandlingPage() {
   return (
     <main className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8">

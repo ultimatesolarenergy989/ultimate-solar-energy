@@ -1,3 +1,22 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Solar Savings | Reduce Energy Bills | Ultimate Solar Energy",
+  description: "Save significantly on your electricity bills with solar energy. Achieve energy independence, reduce costs, and enjoy long-term savings with premium solar systems.",
+  keywords: [
+    "solar savings",
+    "reduce electricity bills",
+    "solar energy savings",
+    "save money solar",
+    "electricity cost reduction",
+    "solar ROI"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function SavingsPage() {
     return (
       <main className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 h-[500px]">
