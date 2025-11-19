@@ -6,6 +6,7 @@ import CompanySlider from "@/components/CompanySlider";
 import YUltimate from "@/components/Y-Ultimate";
 import TimeForSolar from "@/components/TimeForSolar";
 import Blogs from "@/components/Blogs";
+import HomeReviews from "@/components/HomeReviews";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <Calculator />
       <YUltimate />
       <CompanySlider />
+      <HomeReviews />
       <Blogs />
       <TimeForSolar />
     </main>

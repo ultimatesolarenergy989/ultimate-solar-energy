@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Star, Calendar, User, ExternalLink, RefreshCw, MapPin } from 'lucide-react';
+import ReviewWidget from '@/components/ReviewWidget';
 
 // Force dynamic rendering to avoid any SSR issues
 export const dynamic = 'force-dynamic';
@@ -167,7 +168,7 @@ export default function ReviewPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-20">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-[#1e2d5f] mb-4">
@@ -257,9 +258,12 @@ export default function ReviewPage() {
           </div>
         )}
 
-        {/* Reviews List - Single Column */}
+        {/* Two Column Layout: Reviews Left, Widget Right */}
+        <div className="grid lg:grid-cols-3 gap-8 mb-12">
+          {/* Left Column - Reviews List */}
+          <div className="lg:col-span-2">
         {reviews.length > 0 ? (
-          <div className="space-y-6 mb-12">
+          <div className="space-y-6">
             {reviews.map((review) => {
               const isExpanded = isReviewExpanded(review.id);
               const needsTruncation = review.reviewText && shouldTruncate(review.reviewText);
@@ -343,7 +347,7 @@ export default function ReviewPage() {
             })}
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-lg p-12 text-center mb-12">
+          <div className="bg-white rounded-xl shadow-lg p-12 text-center">
             <div className="max-w-md mx-auto">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Star className="w-8 h-8 text-gray-400" />
@@ -352,19 +356,18 @@ export default function ReviewPage() {
                 No reviews yet
               </h3>
               <p className="text-gray-600 mb-6">
-                Click the sync button below to fetch your latest reviews from Google.
+                Click the sync button above to fetch your latest reviews from Google.
               </p>
-              <button
-                onClick={syncWithGoogle}
-                disabled={syncing}
-                className="flex items-center gap-2 px-6 py-3 bg-[#1e2d5f] text-white rounded-lg hover:bg-[#2d4179] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mx-auto"
-              >
-                <RefreshCw className={`w-5 h-5 ${syncing ? 'animate-spin' : ''}`} />
-                {syncing ? 'Syncing...' : 'Sync with Google'}
-              </button>
             </div>
           </div>
         )}
+          </div>
+
+          {/* Right Column - Review Widget */}
+          <div className="lg:col-span-1">
+            <ReviewWidget />
+          </div>
+        </div>
 
         {/* Google Reviews Link */}
         <div className="text-center">

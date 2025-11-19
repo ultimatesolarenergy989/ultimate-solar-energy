@@ -17,11 +17,56 @@ export default function TwentyKwSystemPage() {
     state: "",
     postCode: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Form submission logic here
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const response = await fetch('/api/product-enquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          product: '40 KW System',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({
+          type: 'success',
+          message: 'Thank you! We will contact you shortly.',
+        });
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          state: "",
+          postCode: "",
+        });
+      } else {
+        setSubmitStatus({
+          type: 'error',
+          message: result.error || 'Failed to submit enquiry. Please try again.',
+        });
+      }
+    } catch (error) {
+      console.error('Enquiry submission error:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Network error. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -262,6 +307,17 @@ export default function TwentyKwSystemPage() {
                     <p className="text-white text-sm">One of our friendly consultants will help you.</p>
                   </div>
 
+                  {/* Status Messages */}
+                  {submitStatus && (
+                    <div className={`mb-4 p-3 rounded ${
+                      submitStatus.type === 'success' 
+                        ? 'bg-green-100 border border-green-400 text-green-800' 
+                        : 'bg-red-100 border border-red-400 text-red-800'
+                    }`}>
+                      <p className="text-sm font-semibold">{submitStatus.message}</p>
+                    </div>
+                  )}
+
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                       <label htmlFor="firstName" className="block text-white font-semibold mb-2 text-sm">
@@ -362,9 +418,10 @@ export default function TwentyKwSystemPage() {
                     <div className="pt-4">
                       <button
                         type="submit"
-                        className="w-full bg-[#FFD700] text-[#002866] font-bold py-3 px-6 uppercase tracking-wide hover:bg-yellow-500 transition-colors duration-300"
+                        disabled={isSubmitting}
+                        className="w-full bg-[#FFD700] text-[#002866] font-bold py-3 px-6 uppercase tracking-wide hover:bg-yellow-500 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        GET IN TOUCH
+                        {isSubmitting ? 'SUBMITTING...' : 'GET IN TOUCH'}
                       </button>
                     </div>
                   </form>
