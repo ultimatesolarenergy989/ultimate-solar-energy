@@ -49,7 +49,7 @@ export default function EligibleBlue() {
                     setEmail(e.target.value);
                     setEmailError(false);
                   }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFD700] focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFD700] focus:border-transparent outline-none transition-all"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -68,7 +68,7 @@ export default function EligibleBlue() {
                     setPhone(e.target.value);
                     setPhoneError(false);
                   }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFD700] focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-[#FFD700] focus:border-transparent outline-none transition-all"
                   placeholder="+61 XXX XXX XXX"
                 />
               </div>

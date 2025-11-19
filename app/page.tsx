@@ -9,7 +9,7 @@ import Blogs from "@/components/Blogs";
 
 export default function Home() {
   return (
-    <main>
+    <main className="min-h-screen ">
       <Hero />
       <ResComPlans />
       <Eligible />

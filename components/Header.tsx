@@ -242,13 +242,7 @@ export default function Header() {
 
           {/* Mobile/Tablet CTA */}
           <div className="flex lg:hidden items-center gap-2 sm:gap-3">
-            <a
-              href="tel:1300661388"
-              className="bg-[#FFD700] rounded-full p-2 sm:p-2.5 hover:scale-110 transition-transform duration-200"
-              aria-label="Call us"
-            >
-              <Phone className="text-[#002866]" size={20} />
-            </a>
+           
 
             {/* Mobile Menu Button */}
             <button

@@ -15,7 +15,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#002866] text-white">
+    <footer className="bg-[#002866] text-white lg:mb-0 md:mb-22 sm:mb-12 mb-12 xl:mb-0">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -127,7 +127,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/news"
+                  href="/blog"
                   className="hover:text-[#FFD700] transition-colors flex items-center gap-2"
                 >
                   <span className="text-[#FFD700]">›</span> News

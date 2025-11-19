@@ -157,7 +157,7 @@ export default function HowWeDoIt() {
               {/* CTA Button */}
               <div className="text-center">
                 <Link
-                  href="/quote"
+                  href="/get-a-quote"
                   className="inline-block bg-[#FFD700] text-[#002866] font-bold px-12 py-4 transition-all duration-300 text-base shadow-lg hover:shadow-xl relative overflow-hidden group"
                 >
                   <span className="relative z-10">Get your free quote here</span>
