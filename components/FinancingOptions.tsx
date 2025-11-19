@@ -75,7 +75,7 @@ export default function FinancingOptions() {
               </div>
               
               {/* Read More Button */}
-              <Link href="/contact" className="bg-[#D3D3D3] py-5 text-center hover:bg-[#FFD700] transition-colors cursor-pointer block">
+              <Link href="/contacts" className="bg-[#D3D3D3] py-5 text-center hover:bg-[#FFD700] transition-colors cursor-pointer block">
                 <span className="text-black font-semibold text-sm">READ MORE</span>
               </Link>
             </div>

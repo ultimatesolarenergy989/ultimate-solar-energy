@@ -123,3 +123,27 @@ model Review {
   @@index([isVisible])
   @@map("reviews")
 }
+
+model CustomerSupport {
+  id                String   @id @default(uuid())
+  ticketId          String   @unique
+  helpWith          String
+  email             String
+  phone             String
+  invoiceNumber     String?
+  streetAddress     String
+  subject           String
+  description       String?
+  ticketName        String?
+  ticketDescription String?
+  attachmentUrl     String?
+  status            String   @default("new")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@index([ticketId])
+  @@map("customer_support")
+}
