@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     description: "Premium 6.6kW Ultimate solar system for Australian homes with Tier 1 panels and quality inverters.",
     url: "https://ultimatesolarenergy.com.au/products/6-6-kw-ultimate-system",
     siteName: "Ultimate Solar Energy",
-    type: "product",
+    type: "website",
   },
   robots: {
     index: true,

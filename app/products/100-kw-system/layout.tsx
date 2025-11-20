@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     description: "Premium 100kW commercial solar system for large businesses. Features 182x550W Tier 1 panels and SMA/Fronius/Fimer inverters.",
     url: "https://ultimatesolarenergy.com.au/products/100-kw-system",
     siteName: "Ultimate Solar Energy",
-    type: "product",
+    type: "website",
   },
   robots: {
     index: true,

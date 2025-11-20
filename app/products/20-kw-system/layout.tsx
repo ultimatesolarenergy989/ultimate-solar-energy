@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     description: "Premium 20kW commercial solar system perfect for small businesses. Features 37x550W Tier 1 panels, 20kW Fimer inverter, and CEC-accredited installation.",
     url: "https://ultimatesolarenergy.com.au/products/20-kw-system",
     siteName: "Ultimate Solar Energy",
-    type: "product",
+    type: "website",
   },
   robots: {
     index: true,

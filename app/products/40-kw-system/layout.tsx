@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     description: "Premium 40kW commercial solar system for medium-sized businesses. Features 73x550W Tier 1 panels and 30kW Sungrow/Fronius/Fimer inverter.",
     url: "https://ultimatesolarenergy.com.au/products/40-kw-system",
     siteName: "Ultimate Solar Energy",
-    type: "product",
+    type: "website",
   },
   robots: {
     index: true,
