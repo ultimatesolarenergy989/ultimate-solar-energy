@@ -234,14 +234,7 @@ function SignInForm() {
             </div>
 
             {/* Sign Up Link */}
-            <div className="mt-6 text-center">
-              <Link
-                href="/sign-up"
-                className="text-sm font-semibold text-[#002866] hover:text-[#FDB714] transition-colors duration-200"
-              >
-                Create a new account
-              </Link>
-            </div>
+            
           </div>
         </div>
 
