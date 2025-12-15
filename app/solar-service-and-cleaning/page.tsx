@@ -21,6 +21,14 @@ export const metadata: Metadata = {
     url: "https://ultimatesolarenergy.com.au/solar-service-and-cleaning",
     siteName: "Ultimate Solar Energy",
     type: "website",
+    images: [
+      {
+        url: "/img/medium.png",
+        width: 1200,
+        height: 630,
+        alt: "Ultimate Solar Energy - Service & Cleaning",
+      },
+    ],
   },
   robots: {
     index: true,

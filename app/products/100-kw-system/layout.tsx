@@ -19,10 +19,25 @@ export const metadata: Metadata = {
     url: "https://ultimatesolarenergy.com.au/products/100-kw-system",
     siteName: "Ultimate Solar Energy",
     type: "website",
+    images: [
+      {
+        url: "/img/medium.png",
+        width: 1200,
+        height: 630,
+        alt: "Ultimate Solar Energy - 100 KW Solar System",
+      },
+    ],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 

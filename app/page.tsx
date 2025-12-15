@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     siteName: "Ultimate Solar Energy",
     images: [
       {
-        url: "/img/og-image.jpg",
+        url: "/img/medium.png",
         width: 1200,
         height: 630,
         alt: "Ultimate Solar Energy",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Ultimate Solar Energy | Premium Solar Solutions in Australia",
     description: "Australia's leading solar energy provider. Get premium solar panel systems with CEC-accredited installation and expert service.",
-    images: ["/img/og-image.jpg"],
+    images: ["/img/medium.png"],
   },
   robots: {
     index: true,

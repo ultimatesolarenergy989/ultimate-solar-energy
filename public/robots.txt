@@ -1,0 +1,34 @@
+# Ultimate Solar Energy - Robots.txt
+# https://ultimatesolarenergy.com.au
+
+User-agent: *
+Allow: /
+
+# Disallow authentication pages
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /dashboard
+
+# Disallow API routes
+Disallow: /api/
+
+# Allow all other pages
+Allow: /
+Allow: /blog
+Allow: /products
+Allow: /residential-solar
+Allow: /commercial-solars
+Allow: /about-us
+Allow: /contacts
+Allow: /reviews
+Allow: /get-a-free-quote
+Allow: /solar-battery-storage
+Allow: /solar-ev-chargers
+Allow: /solar-service-and-cleaning
+Allow: /heat-pumps
+
+# Sitemap location
+Sitemap: https://ultimatesolarenergy.com.au/sitemap.xml
+

@@ -21,6 +21,14 @@ export const metadata: Metadata = {
     url: "https://ultimatesolarenergy.com.au/heat-pumps",
     siteName: "Ultimate Solar Energy",
     type: "website",
+    images: [
+      {
+        url: "/img/medium.png",
+        width: 1200,
+        height: 630,
+        alt: "Ultimate Solar Energy - Heat Pumps",
+      },
+    ],
   },
   robots: {
     index: true,

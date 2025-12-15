@@ -28,10 +28,25 @@ export const metadata: Metadata = {
     url: "https://ultimatesolarenergy.com.au/commercial-solars",
     siteName: "Ultimate Solar Energy",
     type: "website",
+    images: [
+      {
+        url: "/img/medium.png",
+        width: 1200,
+        height: 630,
+        alt: "Ultimate Solar Energy - Commercial Solar",
+      },
+    ],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 

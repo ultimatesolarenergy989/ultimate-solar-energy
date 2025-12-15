@@ -6,7 +6,14 @@ import ConditionalLayout from "@/components/ConditionalLayout";
 export const metadata: Metadata = {
   title: "Ultimate Solar Energy",
   description: "Fast, reliable solar solutions for homes and businesses.",
-  metadataBase: new URL("https://your-temp-domain.vercel.app"),
+  metadataBase: new URL("https://ultimatesolarenergy.com.au"),
+  icons: {
+    icon: '/img/logo/favicon.ico',
+    apple: '/img/medium.png',
+  },
+  openGraph: {
+    images: ['/img/medium.png'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

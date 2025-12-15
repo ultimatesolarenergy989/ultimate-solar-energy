@@ -18,16 +18,6 @@ function SignInForm() {
     const error = searchParams.get('error');
     if (error === 'session_expired') {
       setErrorMessage('Your session has expired. Please sign in again.');
-      
-      // Clear the error from URL after showing it
-      window.history.replaceState({}, '', '/sign-in');
-      
-      // Auto-clear the error message after 5 seconds
-      const timer = setTimeout(() => {
-        setErrorMessage("");
-      }, 5000);
-      
-      return () => clearTimeout(timer);
     }
   }, [searchParams]);
 
@@ -36,14 +26,7 @@ function SignInForm() {
     e.preventDefault();
     setIsLoading(true);
 
-    console.log('Starting login attempt...');
-
     try {
-      // Add timeout to prevent infinite loading
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
-      console.log('Sending login request...');
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -51,38 +34,26 @@ function SignInForm() {
         },
         body: JSON.stringify({ email, password }),
         credentials: 'include', // Important for cookies
-        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
-      console.log('Response received:', response.status);
-
       const data = await response.json();
-      console.log('Response data:', data);
 
       if (response.ok) {
-        console.log('Login successful!');
         // Store user data in localStorage for client-side use
         localStorage.setItem('user', JSON.stringify(data.user));
         
         // Get redirect parameter or default to dashboard
         const redirect = searchParams.get('redirect') || '/dashboard';
         
-        console.log('Redirecting to:', redirect);
         // Redirect after successful login
         router.push(redirect);
       } else {
-        console.error('Login failed:', data.error);
         setErrorMessage(data.error || 'Login failed');
         setIsLoading(false);
       }
     } catch (error) {
       console.error('Login error:', error);
-      if (error instanceof Error && error.name === 'AbortError') {
-        setErrorMessage('Request timeout. Please check your connection and try again.');
-      } else {
-        setErrorMessage('An error occurred during login. Please try again.');
-      }
+      setErrorMessage('An error occurred during login. Please try again.');
       setIsLoading(false);
     }
   };
@@ -233,14 +204,35 @@ function SignInForm() {
               </div>
             </div>
 
-            {/* Sign Up Link */}
-            <div className="mt-6 text-center">
-              <Link
-                href="/sign-up"
-                className="text-sm font-semibold text-[#002866] hover:text-[#FDB714] transition-colors duration-200"
-              >
-                Create a new account
-              </Link>
+            {/* Admin Contact Notice */}
+            <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <svg 
+                  className="w-5 h-5 text-[#002866] mt-0.5 flex-shrink-0" 
+                  fill="currentColor" 
+                  viewBox="0 0 20 20"
+                >
+                  <path 
+                    fillRule="evenodd" 
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" 
+                    clipRule="evenodd" 
+                  />
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-[#002866] mb-1">
+                    Authorized Users Only
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    This login is restricted to authorized personnel. If you need access, please contact the administrator at{" "}
+                    <a 
+                      href="mailto:info@ultimatesolarenergy.com.au" 
+                      className="font-semibold text-[#002866] hover:text-[#FDB714] transition-colors"
+                    >
+                      info@ultimatesolarenergy.com.au
+                    </a>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

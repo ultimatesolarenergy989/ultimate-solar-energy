@@ -5,7 +5,7 @@ export function createMetadata({
   description,
   keywords,
   path = "",
-  image = "/img/og-image.jpg",
+  image = "/img/medium.png",
   noIndex = false,
 }: {
   title: string;
@@ -55,9 +55,9 @@ export function createMetadata({
           googleBot: {
             index: true,
             follow: true,
-            "max-video-preview": -1,
-            "max-image-preview": "large",
-            "max-snippet": -1,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
           },
         },
   };
