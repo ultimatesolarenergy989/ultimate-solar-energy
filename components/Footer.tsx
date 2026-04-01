@@ -225,6 +225,19 @@ export default function Footer() {
             © {new Date().getFullYear()} Ultimate Solar Energy
           </p>
 
+          {/* Agency Credit */}
+          <p className="text-xs font-medium opacity-80 hover:opacity-100 transition-opacity">
+            Designed & Developed by{" "}
+            <a
+              href="https://cruxlabs.com.au/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold hover:underline"
+            >
+              Crux Labs
+            </a>
+          </p>
+
           {/* Social Media Icons */}
           <div className="flex items-center gap-5">
             <a
