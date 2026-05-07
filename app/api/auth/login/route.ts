@@ -8,7 +8,8 @@ export async function POST(request: NextRequest) {
   console.log('🔵 Login endpoint called');
   
   try {
-    const { email, password } = await request.json();
+    const { email: rawEmail, password } = await request.json();
+    const email = rawEmail?.trim().toLowerCase();
     console.log('🔵 Login attempt for:', email);
 
     // Rate limiting - 5 attempts per 15 minutes per IP
