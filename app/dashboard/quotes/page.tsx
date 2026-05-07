@@ -1,15 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { 
-  Search, 
-  Trash2, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Filter, 
-  X, 
+import * as XLSX from "xlsx";
+import {
+  Search,
+  Trash2,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Filter,
+  X,
   AlertTriangle,
   TrendingUp,
   Users,
@@ -21,6 +22,10 @@ import {
   Loader2,
   ShoppingCart,
   Package,
+  Download,
+  ChevronDown,
+  FileSpreadsheet,
+  FileText,
 } from "lucide-react";
 
 interface Quotation {
@@ -81,9 +86,21 @@ export default function QuotationsPage() {
   const [emailMessage, setEmailMessage] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailResponse, setEmailResponse] = useState<{ success: boolean; message: string } | null>(null);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchQuotations();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target as Node)) {
+        setShowExportMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const fetchQuotations = async () => {
@@ -136,6 +153,45 @@ export default function QuotationsPage() {
 
     return matchesSearch && matchesFilter;
   });
+
+  const getExportData = () =>
+    filteredQuotations.map((q) => ({
+      "First Name": q.firstName,
+      "Last Name": q.lastName,
+      Email: q.email,
+      Phone: q.phone,
+      State: q.state || "",
+      "Post Code": q.postCode,
+      "Looking For": formatLookingFor(q.lookingFor),
+      Categories: q.categories.join(", "),
+      Status: q.status,
+      "Date Submitted": new Date(q.createdAt).toLocaleDateString("en-AU"),
+    }));
+
+  const exportCSV = () => {
+    const data = getExportData();
+    const headers = Object.keys(data[0] || {});
+    const rows = data.map((row) => headers.map((h) => `"${String(row[h as keyof typeof row]).replace(/"/g, '""')}"`).join(","));
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `quotes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowExportMenu(false);
+  };
+
+  const exportExcel = () => {
+    const data = getExportData();
+    const ws = XLSX.utils.json_to_sheet(data);
+    ws["!cols"] = [12, 12, 30, 18, 12, 12, 20, 25, 12, 16].map((w) => ({ wch: w }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Quotes");
+    XLSX.writeFile(wb, `quotes-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    setShowExportMenu(false);
+  };
 
   const openDeleteModal = (quotation: Quotation) => {
     setQuotationToDelete(quotation);
@@ -257,8 +313,46 @@ export default function QuotationsPage() {
     <DashboardLayout>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#002866] mb-2">Quote Requests</h1>
-        <p className="text-gray-600">Manage and respond to customer quote requests</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-[#002866] mb-2">Quote Requests</h1>
+            <p className="text-gray-600">Manage and respond to customer quote requests</p>
+          </div>
+          {/* Export Button */}
+          <div className="relative" ref={exportMenuRef}>
+            <button
+              onClick={() => setShowExportMenu((v) => !v)}
+              className="flex items-center gap-2 px-5 py-3 bg-[#002866] text-white font-semibold rounded-xl hover:bg-[#FFD700] hover:text-[#002866] transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              <Download size={18} />
+              Export
+              <ChevronDown size={16} className={`transition-transform duration-200 ${showExportMenu ? "rotate-180" : ""}`} />
+            </button>
+            {showExportMenu && (
+              <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+                <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Export {filteredQuotations.length} records
+                  </p>
+                </div>
+                <button
+                  onClick={exportCSV}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-[#002866] hover:text-white transition-colors duration-150"
+                >
+                  <FileText size={16} />
+                  Download as CSV
+                </button>
+                <button
+                  onClick={exportExcel}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-[#002866] hover:text-white transition-colors duration-150"
+                >
+                  <FileSpreadsheet size={16} />
+                  Download as Excel
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Stats Cards */}
