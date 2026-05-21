@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 import { AdminContactNotification } from "@/lib/emails/admin-contact-notification";
 import { ClientConfirmation } from "@/lib/emails/client-confirmation";
+import { syncContactToHubSpot } from "@/lib/hubspot";
 
 // GET all contacts
 export async function GET(request: NextRequest) {
@@ -123,6 +124,17 @@ export async function POST(request: NextRequest) {
         message,
         status: "new",
       },
+    });
+
+    // Sync to HubSpot (non-blocking)
+    syncContactToHubSpot({
+      firstName,
+      lastName,
+      email,
+      phone,
+      state,
+      postCode,
+      message,
     });
 
     // Send emails using Resend

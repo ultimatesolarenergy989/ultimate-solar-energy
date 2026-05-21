@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { syncEligibilityToHubSpot } from "@/lib/hubspot";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -47,6 +48,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Sync to HubSpot (non-blocking)
+    syncEligibilityToHubSpot({ email, phone });
 
     const CONTACT_TO = process.env.CONTACT_TO || "team@ultimatesolarenergy.com.au";
     const CONTACT_FROM = process.env.CONTACT_FROM || "noreply@ultimatesolarenergy.com.au";

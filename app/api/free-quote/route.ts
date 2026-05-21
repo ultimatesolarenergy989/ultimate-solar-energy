@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Resend } from 'resend';
+import { syncQuoteToHubSpot } from '@/lib/hubspot';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -39,6 +40,19 @@ export async function POST(request: NextRequest) {
         categories,
         status: 'new',
       },
+    });
+
+    // Sync to HubSpot (non-blocking)
+    syncQuoteToHubSpot({
+      firstName: data.name.split(' ')[0] || data.name,
+      lastName: data.name.split(' ').slice(1).join(' ') || '',
+      email: data.email,
+      phone: data.phone,
+      state: data.state || '',
+      postCode: data.zip || '',
+      product: lookingFor === 'solar-battery' ? 'Solar + Battery System' :
+               lookingFor === 'battery' ? 'Energy Storage' : 'Solar Panels',
+      category: categories.join(', '),
     });
 
     // Prepare email content

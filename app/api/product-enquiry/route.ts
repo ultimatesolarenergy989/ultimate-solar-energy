@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { syncQuoteToHubSpot } from '@/lib/hubspot';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -24,9 +25,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Sync to HubSpot (non-blocking)
+    syncQuoteToHubSpot({
+      firstName,
+      lastName: lastName || '',
+      email,
+      phone,
+      state: state || '',
+      postCode: postCode || '',
+      product,
+    });
+
     const CONTACT_TO = process.env.CONTACT_TO || 'team@ultimatesolarenergy.com.au';
     const CONTACT_FROM = process.env.CONTACT_FROM || 'noreply@ultimatesolarenergy.com.au';
-    
+
     console.log('📧 Sending email to:', CONTACT_TO);
 
     // Admin email with professional template design (matching Contact/Get-a-Quote pages)
