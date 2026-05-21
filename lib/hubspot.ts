@@ -14,6 +14,8 @@ interface HubSpotContactProperties {
   message?: string;
   hs_lead_status?: string;
   lifecyclestage?: string;
+  lead_source?: string;
+  website_form_type?: string;
 }
 
 interface HubSpotDealProperties {
@@ -173,9 +175,7 @@ export function syncContactToHubSpot(data: {
   state?: string;
   postCode?: string;
   message?: string;
-  source?: string;
 }) {
-  // Fire and forget — don't block the API response
   createOrUpdateContact({
     email: data.email,
     firstname: data.firstName,
@@ -185,6 +185,8 @@ export function syncContactToHubSpot(data: {
     zip: data.postCode || "",
     message: data.message || "",
     hs_lead_status: "Initial stage",
+    lead_source: "Web",
+    website_form_type: "contact_form",
   }).catch((err) => console.error("❌ HubSpot sync failed:", err));
 }
 
@@ -200,6 +202,7 @@ export function syncQuoteToHubSpot(data: {
   postCode?: string;
   product: string;
   category?: string;
+  formType?: "free_quote" | "product_enquiry";
 }) {
   createOrUpdateContact({
     email: data.email,
@@ -209,12 +212,16 @@ export function syncQuoteToHubSpot(data: {
     state: data.state || "",
     zip: data.postCode || "",
     hs_lead_status: "Initial stage",
+    lead_source: "Web",
+    website_form_type: data.formType || "free_quote",
   })
     .then((contactId) => {
       if (contactId) {
-        return createDeal(contactId, {
-          dealname: `${data.product} — ${data.firstName} ${data.lastName}`,
-        });
+        // Deal creation requires crm.objects.deals.write scope.
+        // Uncomment below once the owner adds that scope to the Private App.
+        // return createDeal(contactId, {
+        //   dealname: `${data.product} - ${data.firstName} ${data.lastName}`,
+        // });
       }
     })
     .catch((err) => console.error("❌ HubSpot quote sync failed:", err));
