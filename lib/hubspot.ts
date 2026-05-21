@@ -238,6 +238,8 @@ export function syncEligibilityToHubSpot(data: {
     email: data.email,
     phone: data.phone,
     hs_lead_status: "Initial stage",
+    lead_source: "Web",
+    website_form_type: "eligibility_check",
   }).catch((err) =>
     console.error("❌ HubSpot eligibility sync failed:", err)
   );

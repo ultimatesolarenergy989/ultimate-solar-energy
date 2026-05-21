@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       state: state || '',
       postCode: postCode || '',
       product,
+      formType: 'product_enquiry',
     });
 
     const CONTACT_TO = process.env.CONTACT_TO || 'team@ultimatesolarenergy.com.au';
